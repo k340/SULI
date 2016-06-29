@@ -1,12 +1,10 @@
 
-'''takes an array of regions with dec, ra, tstart, tstop, count, roi, and eliminates overlapping regions based on which is more significant'''
-
-import numpy as np
+"""takes an array of regions with dec, ra, tstart, tstop, count, roi, and eliminates overlapping regions based on which is more significant"""
 
 #returns distance between centers of input regions from inp_list
 def dist(region1, region2):
 
-    r = 0 #replace with actual math
+    r = abs(region2-region1) #replace with actual math
 
     return r
 
@@ -95,7 +93,8 @@ def elim_mult_trig(inp_list, min_dist):
 
                         if ibin_max != jbin_max:
 
-                            # throw error, something weird happened
+                                pass
+                                # throw error, something weird happened
 
                         elif irate_max >= jrate_max:
 
@@ -105,7 +104,7 @@ def elim_mult_trig(inp_list, min_dist):
 
                         else:
 
-                            # j is more significant, emove i from list, dec i so as not to skip next list element, and return to parent loop
+                            # j is more significant, remove i from list, dec i, and return to parent loop
                             regions.pop(i)
                             dec_i = True
                             break
@@ -114,3 +113,4 @@ def elim_mult_trig(inp_list, min_dist):
                 pass
 
         return regions
+
