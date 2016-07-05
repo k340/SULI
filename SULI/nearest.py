@@ -184,8 +184,3 @@ if __name__=="__main__":
             f.write("%s" % out)
 
             f.write("\n")
-
-
-
-
-
