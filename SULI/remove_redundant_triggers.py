@@ -25,9 +25,9 @@ def dist(region1, region2):
     :param region2: input region 2 (an object with a 'ra' and 'dec' items, typically a np.recarray)
     :return: the angular distance in degrees
     """
-    region1_center = SkyCoord(ra=region1['ra'] * u.degree, dec=region1['dec'] * u.degree, frame='ICRS')
+    region1_center = SkyCoord(ra=region1['ra'] * u.degree, dec=region1['dec'] * u.degree, frame='icrs')
 
-    region2_center = SkyCoord(ra=region2['ra'] * u.degree, dec=region2['dec'] * u.degree, frame='ICRS')\
+    region2_center = SkyCoord(ra=region2['ra'] * u.degree, dec=region2['dec'] * u.degree, frame='icrs')
 
     angular_distance = region1_center.separation(region2_center).to(u.degree)
 
