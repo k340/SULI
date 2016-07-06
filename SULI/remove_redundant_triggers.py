@@ -222,7 +222,7 @@ if __name__=="__main__":
     args = parser.parse_args()
 
     # get input data file from parser and convert to record array
-    data = np.recfromtxt(args.inp_list, names=True, usemask=False)
+    data = np.recfromtxt(args.in_list, names=True, usemask=False)
 
     # check for multiple triggers by same event,
     result = check_nearest(data, args.min_dist)
