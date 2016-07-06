@@ -29,7 +29,7 @@ if __name__=="__main__":
 
     # iterate over input file, creating new fits file for every 86400 seconds of data (24 hours)
 
-    while begin < (data[0].header['TSTART'] + 200000):
+    while begin < end:
         cut_time = begin + 86400
 
         gtselect = GtApp('gtselect')
