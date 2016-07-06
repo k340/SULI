@@ -20,7 +20,7 @@ setup(
 
     classifiers=[],
 
-    install_requires=['numpy'],
+    install_requires=['numpy','astropy'],
 
 )
 
