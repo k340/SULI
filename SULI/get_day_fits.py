@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 """This script takes Fermi data in the form of a fits file as input, and outputs a set of fits files that each contain
-    24 hours worth of input data. Breaking the data into these smaller chunks is optimal for detection of short duration
+    24 hours worth of input data. Output files are named as [input filename]_[output start time]_[output stop time].fits
+    Breaking the data into these smaller chunks is optimal for detection of short duration
     transients using a bayesian blocks algorithm"""
 
 import argparse
