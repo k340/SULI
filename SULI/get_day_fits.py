@@ -40,11 +40,11 @@ if __name__=="__main__":
 
     n_days = duration / 86400.0
 
-    print("Found %s days in file" % n_days)
+    # print("Found %s days in file" % n_days)
 
     n_days_rounded = int(np.ceil(n_days))
 
-    print("Rounded up to %s" % n_days_rounded)
+    # print("Rounded up to %s" % n_days_rounded)
 
     # iterate over input file, creating new fits file for every 86400 seconds of data (24 hours)
 
@@ -58,7 +58,7 @@ if __name__=="__main__":
 
         gtselect['infile'] = args.in_file
 
-        gtselect['outfile'] = args.in_file.rsplit(".", 1)[0] + '_' + str(this_start) + '_' + str(this_stop) + '.fits'
+        gtselect['outfile'] = args.in_file.rsplit(".", 1)[0] + '_' + str(this_start) + '.fits'
 
         gtselect['tmin'] = this_start
 
