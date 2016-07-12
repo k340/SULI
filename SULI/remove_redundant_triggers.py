@@ -31,7 +31,8 @@ def dist(region1, region2):
 
     angular_distance = region1_center.separation(region2_center).to(u.degree)
 
-    # r = acos(sin(region1['dec'])*sin(region2['dec']) + cos(region1['dec'])*cos(region2['dec'])*cos(region1['ra']-region2['ra']))
+    # angular_dist = acos(sin(region1['dec'])*sin(region2['dec']) +
+    # cos(region1['dec'])*cos(region2['dec'])*cos(region1['ra']-region2['ra']))
 
     return angular_distance.value
 

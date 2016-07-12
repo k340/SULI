@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"this is a test script"
+"this is a test script that prints whatever argument is passed to it from the command line"
 
 import argparse
 
