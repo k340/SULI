@@ -6,6 +6,7 @@
 import argparse
 import subprocess as sub
 from astropy.io import fits
+import os
 
 # execute only if run from command line
 if __name__ == "__main__":
@@ -16,19 +17,19 @@ if __name__ == "__main__":
     # add the arguments needed to the parser
 
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--date', help='date specifying file to download')
+    group.add_argument('--date', help='date specifying file to load')
     group.add_argument('--inp_fts', help='filenames of ft1 and ft2 input, separated by a comma (ex: foo.ft1,bar.ft2)')
 
-    parser.add_argument("--evclass", help="Event class to use for cutting the data (default: 128)", type=int,
+    parser.add_argument("--evclass", help="Event class to use for cutting the data (default: 128)", type=str,
                         required=True)
     parser.add_argument("--probability", help="Probability of null hypothesis", type=float, required=True)
     parser.add_argument("--min_dist", help="Distance above which regions are not considered to overlap", type=float,
                         required=True)
     parser.add_argument("--out_file", help="Name of text file containing list of possible transients", type=str,
                         required=True)
-    parser.add_argument("--loglevel", help="Level of log detail (DEBUG, INFO)")
-    parser.add_argument("--logfile", help="Name of logfile")
-    parser.add_argument("--workdir", help="Path of work directory")
+    parser.add_argument("--loglevel", help="Level of log detail (DEBUG, INFO)",default='info')
+    parser.add_argument("--logfile", help="Name of logfile for the ltfsearch.py script",default='ltfsearch.log')
+    parser.add_argument("--workdir", help="Path of work directory",default=os.getcwd())
     # parser.add_argument("--zmax", help="Maximum zenith allowed for data to be considered", required=True, type=float)
 
     # parse the arguments
@@ -44,15 +45,15 @@ if __name__ == "__main__":
                        shell=True)
 
         # remove redundant triggers
-        sub.check_call('remove_redundant_regions.py --in_list active_file.txt --min_dist ' + str(args.min_dist) +
+        sub.check_call('remove_redundant_triggers.py --in_list active_file.txt --min_dist ' + str(args.min_dist) +
                        ' --out_list ' + str(args.out_file), shell=True)
 
     # else using simulated data
     else:
 
         # get names of ft1 and ft2 files
-        ft1_name = args.inp_fts.rsplit(",", 1)[0]
-        ft2_name = args.inp_fts.rsplit(",", 1)[1]
+        ft1_name = os.path.abspath(os.path.expandvars(os.path.expanduser(args.inp_fts.rsplit(",", 1)[0])))
+        ft2_name = os.path.abspath(os.path.expandvars(os.path.expanduser(args.inp_fts.rsplit(",", 1)[1])))
 
         sim_start = 0
         sim_end = 1
@@ -71,5 +72,5 @@ if __name__ == "__main__":
                        ' --outfile active_file.txt --ft1 ' + str(ft1_name) + ' --ft2 ' + str(ft2_name), shell=True)
 
         # remove redundant triggers
-        sub.check_call('remove_redundant_regions.py --in_list active_file.txt --min_dist ' + str(args.min_dist) +
+        sub.check_call('remove_redundant_triggers.py --in_list active_file.txt --min_dist ' + str(args.min_dist) +
                        ' --out_list ' + str(args.out_file), shell=True)
