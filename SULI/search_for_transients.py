@@ -4,9 +4,10 @@
     actual data is specified by a date, simulated is given by a specific ft1 or ft2 file"""
 
 import argparse
-import subprocess as sub
 from astropy.io import fits
 import os
+
+from SULI.execute_command import execute_command
 
 # execute only if run from command line
 if __name__ == "__main__":
@@ -35,18 +36,26 @@ if __name__ == "__main__":
     # parse the arguments
     args = parser.parse_args()
 
+    temp_file = 'active_file.txt'
+
     # if using real data
+
     if args.date:
 
         # bayesian blocks
-        sub.check_call('ltfsearch.py --date ' + str(args.date) + ' --duration 86400.0 --irfs ' + str(args.irf) +
-                       ' --probability ' + str(args.probability) + ' --loglevel ' + str(args.loglevel) + ' --logfile ' +
-                       str(args.logfile) + ' --workdir ' + str(args.workdir) + ' --outfile active_file.txt',
-                       shell=True)
+
+        cmd_line = 'ltfsearch.py --date %s --duration 86400.0 --irfs %s --probability %s --loglevel %s --logfile %s ' \
+                   '--workdir %s --outfile %s' % (args.date, args.irf, args.probability, args.loglevel, args.logfile,
+                                                  args.workdir, temp_file)
+
+        execute_command(cmd_line)
 
         # remove redundant triggers
-        sub.check_call('remove_redundant_triggers.py --in_list active_file.txt --min_dist ' + str(args.min_dist) +
-                       ' --out_list ' + str(args.out_file), shell=True)
+
+        cmd_line = 'remove_redundant_triggers.py --in_list %s --min_dist %s --out_list %s' % (temp_file, args.min_dist,
+                                                                                              args.out_file)
+
+        execute_command(cmd_line)
 
     # else using simulated data
     else:
@@ -66,11 +75,17 @@ if __name__ == "__main__":
         dur = sim_end - sim_start
 
         # bayesian blocks
-        sub.check_call('ltfsearch.py --date ' + str(sim_start) + ' --duration ' + str(dur) + ' --irfs ' +
-                       str(args.irf) + ' --probability ' + str(args.probability) + ' --loglevel ' +
-                       str(args.loglevel) + ' --logfile ' + str(args.logfile) + ' --workdir ' + str(args.workdir) +
-                       ' --outfile active_file.txt --ft1 ' + str(ft1_name) + ' --ft2 ' + str(ft2_name), shell=True)
+
+        cmd_line = 'ltfsearch.py --date %s --duration %s --irfs %s --probability %s --loglevel %s --logfile %s ' \
+                   '--workdir %s --outfile %s --ft1 %s --ft2 %s' %(sim_start, dur, args.irf, args.probability,
+                                                                   args.loglevel, args.logfile, args.workdir,
+                                                                   temp_file, ft1_name, ft2_name)
+
+        execute_command(cmd_line)
 
         # remove redundant triggers
-        sub.check_call('remove_redundant_triggers.py --in_list active_file.txt --min_dist ' + str(args.min_dist) +
-                       ' --out_list ' + str(args.out_file), shell=True)
+
+        cmd_line = 'remove_redundant_triggers.py --in_list active_file.txt --min_dist %s --out_list %s' %(args.min_dist,
+                                                                                                          args.out_file)
+
+        execute_command(cmd_line)
