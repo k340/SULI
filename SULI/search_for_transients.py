@@ -20,7 +20,7 @@ if __name__ == "__main__":
     group.add_argument('--date', help='date specifying file to load')
     group.add_argument('--inp_fts', help='filenames of ft1 and ft2 input, separated by a comma (ex: foo.ft1,bar.ft2)')
 
-    parser.add_argument("--evclass", help="Event class to use for cutting the data (default: 128)", type=str,
+    parser.add_argument("--irf", help="Instrument response function name to be used", type=str,
                         required=True)
     parser.add_argument("--probability", help="Probability of null hypothesis", type=float, required=True)
     parser.add_argument("--min_dist", help="Distance above which regions are not considered to overlap", type=float,
@@ -39,7 +39,7 @@ if __name__ == "__main__":
     if args.date:
 
         # bayesian blocks
-        sub.check_call('ltfsearch.py --date ' + str(args.date) + ' --duration 86400.0 --irfs ' + str(args.evclass) +
+        sub.check_call('ltfsearch.py --date ' + str(args.date) + ' --duration 86400.0 --irfs ' + str(args.irf) +
                        ' --probability ' + str(args.probability) + ' --loglevel ' + str(args.loglevel) + ' --logfile ' +
                        str(args.logfile) + ' --workdir ' + str(args.workdir) + ' --outfile active_file.txt',
                        shell=True)
@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
         # bayesian blocks
         sub.check_call('ltfsearch.py --date ' + str(sim_start) + ' --duration ' + str(dur) + ' --irfs ' +
-                       str(args.evclass) + ' --probability ' + str(args.probability) + ' --loglevel ' +
+                       str(args.irf) + ' --probability ' + str(args.probability) + ' --loglevel ' +
                        str(args.loglevel) + ' --logfile ' + str(args.logfile) + ' --workdir ' + str(args.workdir) +
                        ' --outfile active_file.txt --ft1 ' + str(ft1_name) + ' --ft2 ' + str(ft2_name), shell=True)
 
