@@ -15,7 +15,7 @@ from SULI.execute_command import execute_command
 if __name__ == "__main__":
 
     # create parser for this script
-    parser = argparse.ArgumentParser('Split Fermi data file (.fits) into multiple smaller files each spanning 24 hours')
+    parser = argparse.ArgumentParser('Split Fermi data file (.fits) into multiple smaller files each spanning 24 hours by default')
 
     # add the arguments needed to the parser
     parser.add_argument("--in_ft1", help="Ft1 file containing data to be segmented", required=True,
@@ -23,11 +23,12 @@ if __name__ == "__main__":
     parser.add_argument("--in_ft2", help="Ft2 file containing data to be segmented", required=True,
                         type=str)
     parser.add_argument("--buffer", help="Ft2 file is expanded backwards and forwards in time by this amount to ensure"
-                                         "it covers a time interval >= Ft1", required=True)
+                                         "it covers a time interval >= Ft1", required=True, type = float)
     parser.add_argument("--evclass", help="Event class to use for cutting the data (default: 128)", required=True,
                         type=int)
     parser.add_argument("--zmax", help="Zenith cut for the events", required=True,
                         type=float)
+    parser.add_argument("--interval", help="Length of time interval covered by output files (default 24 hours)", type=float, default=86400.0)
 
     # parse the arguments
     args = parser.parse_args()
@@ -41,31 +42,40 @@ if __name__ == "__main__":
 
     duration = event_file_end - event_file_start
 
-    n_days = duration / 86400.0
+    n_days = duration / args.interval
 
-    print("Found %s days in file" % n_days)
+    print("Found %s intervals in file" % n_days)
 
     n_days_rounded = int(np.ceil(n_days))
 
     print("Rounded up to %s" % n_days_rounded)
 
-    # iterate over input ft1, creating new fits file for every 86400 seconds of data (24 hours)
+    # iterate over input files creating new fits file for every 86400 seconds of data (24 hours)
 
     for i in range(n_days_rounded):
 
-        this_start = event_file_start + i * 86400.0
+        this_ft1_start = event_file_start + i * args.interval
 
-        this_stop = event_file_start + (i+1) * 86400.0
+        this_ft1_stop = event_file_start + (i+1) * args.interval
+
+        this_ft2_start = this_ft1_start - args.buffer
+
+        this_ft2_stop = this_ft1_stop + args.buffer
+
+        print this_ft1_start, this_ft1_stop, i
+        print this_ft2_start, this_ft2_stop, i
+
+        # cut ft1
 
         gtselect = GtApp('gtselect')
 
         gtselect['infile'] = args.in_ft1
 
-        gtselect['outfile'] = args.in_ft1.rsplit(".", 1)[0] + '_' + str(this_start) + 'ft1.fits'
+        gtselect['outfile'] = args.in_ft1.rsplit(".", 1)[0] + '_' + str(this_ft1_start) + '_ft1.fits'
 
-        gtselect['tmin'] = this_start
+        gtselect['tmin'] = this_ft1_start
 
-        gtselect['tmax'] = this_stop
+        gtselect['tmax'] = this_ft1_stop
 
         gtselect['evclass'] = args.evclass
 
@@ -81,19 +91,43 @@ if __name__ == "__main__":
 
         gtselect.run()
 
-    # do same for ft2
-
-    for i in range(n_days_rounded):
-
-        this_start = event_file_start - args.buffer + i * 86400.0
-
-        this_stop = event_file_start + args.buffer + (i + 1) * 86400.0
+        #cut ft2
 
         # prepare cut command
-        cmd_line = "ftcopy '%s[SC_DATA][START > %s && STOP < %s]' output_ft2.fit copyall=true'" % (args.in_ft2, this_start,
-                                                                                                   this_stop)
+        out_name = args.in_ft2.rsplit(".", 1)[0] + '_' + str(this_ft2_start) + '_ft2.fits'
+
+        cmd_line = "ftcopy '%s[SC_DATA][START > %s && STOP < %s]' %s copyall=true" % (args.in_ft2, this_ft2_start,
+                                                                                                   this_ft2_stop,
+                                                                                                   out_name)
         # execute cut
         execute_command(cmd_line)
+
+
+
+
+
+
+
+
+
+
+
+    '''for i in range(n_days_rounded):
+
+        this_ft2_start = event_file_start - args.buffer + i * args.interval
+
+        this_ft2_stop = event_file_start + args.buffer + (i + 1) * args.interval
+
+        print this_ft2_start, this_ft2_stop, i
+
+        # prepare cut command
+        out_name = args.in_ft2.rsplit(".", 1)[0] + '_' + str(this_start) + '_ft2.fits'
+
+        cmd_line = "ftcopy '%s[SC_DATA][START > %s && STOP < %s]' %s copyall=true" % (args.in_ft2, this_ft2_start,
+                                                                                                   this_ft2_stop,
+                                                                                                   out_name)
+        # execute cut
+        execute_command(cmd_line)'''
 
 
 '''gtsel on ft1 and do ftcopy thing on ft2 master to get ft2s
