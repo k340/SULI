@@ -43,11 +43,11 @@ if __name__ == "__main__":
 
     n_days = duration / 86400.0
 
-    # print("Found %s days in file" % n_days)
+    print("Found %s days in file" % n_days)
 
     n_days_rounded = int(np.ceil(n_days))
 
-    # print("Rounded up to %s" % n_days_rounded)
+    print("Rounded up to %s" % n_days_rounded)
 
     # iterate over input ft1, creating new fits file for every 86400 seconds of data (24 hours)
 
@@ -81,29 +81,28 @@ if __name__ == "__main__":
 
         gtselect.run()
 
-    # pull relevant data interval from ft2 input
+    # do same for ft2
 
-    with fits.open(args.in_ft2) as ft2:
+    for i in range(n_days_rounded):
 
-        # add time buffers to cut
+        this_start = event_file_start - args.buffer + i * 86400.0
 
-        event_file_start -= args.buffer
-        event_file_end += args.buffer
+        this_stop = event_file_start + args.buffer + (i + 1) * 86400.0
 
-        cmd_line = "ftcopy '%s[SC_DATA][START > %s && STOP < %s]' output_ft2.fit copyall=true'" % (ft2,
-                                                                                                   event_file_start,
-                                                                                                   event_file_end)
-    execute_command(cmd_line)
+        # prepare cut command
+        cmd_line = "ftcopy '%s[SC_DATA][START > %s && STOP < %s]' output_ft2.fit copyall=true'" % (args.in_ft2, this_start,
+                                                                                                   this_stop)
+        # execute cut
+        execute_command(cmd_line)
 
 
-'''First make this take an ft1 and ft2, gtsel on ft1 and do the other ftcopy thing on ft2 master to get ft2.
+'''gtsel on ft1 and do ftcopy thing on ft2 master to get ft2s
     then test whole thing on comp with data already have.
     then test on farm with random day. remember to log on:
         ssh -X suli_students@galprop-cluster
         go to your dir and cat instructions
         follow them
     this is the ftcopy thing:
-    ftcopy '/nfs/data1/fermi_dm_simulation/FT2_tothefuture_1095722779.36.fits[SC_DATA][START > 243215772.532 && STOP < 243226804.137]' output_ft2.fit copyall=true
-    might need to subprocess b/c command line'''
+    ftcopy '/nfs/data1/fermi_dm_simulation/FT2_tothefuture_1095722779.36.fits[SC_DATA][START > 243215772.532 && STOP < 243226804.137]' output_ft2.fit copyall=true'''
 
 
