@@ -15,7 +15,8 @@ from SULI.execute_command import execute_command
 if __name__ == "__main__":
 
     # create parser for this script
-    parser = argparse.ArgumentParser('Split Fermi data file (.fits) into multiple smaller files each spanning 24 hours by default')
+    parser = argparse.ArgumentParser(
+        'Split Fermi data file (.fits) into multiple smaller files each spanning 24 hours by default')
 
     # add the arguments needed to the parser
     parser.add_argument("--in_ft1", help="Ft1 file containing data to be segmented", required=True,
@@ -23,12 +24,13 @@ if __name__ == "__main__":
     parser.add_argument("--in_ft2", help="Ft2 file containing data to be segmented", required=True,
                         type=str)
     parser.add_argument("--buffer", help="Ft2 file is expanded backwards and forwards in time by this amount to ensure"
-                                         "it covers a time interval >= Ft1", required=True, type = float)
+                                         "it covers a time interval >= Ft1", required=True, type=float)
     parser.add_argument("--evclass", help="Event class to use for cutting the data (default: 128)", required=True,
                         type=int)
     parser.add_argument("--zmax", help="Zenith cut for the events", required=True,
                         type=float)
-    parser.add_argument("--interval", help="Length of time interval covered by output files (default 24 hours)", type=float, default=86400.0)
+    parser.add_argument("--interval", help="Length of time interval covered by output files (default 24 hours)",
+                        type=float, default=86400.0)
 
     # parse the arguments
     args = parser.parse_args()
@@ -56,22 +58,27 @@ if __name__ == "__main__":
 
         this_ft1_start = event_file_start + i * args.interval
 
-        this_ft1_stop = event_file_start + (i+1) * args.interval
+        this_ft1_stop = event_file_start + (i + 1) * args.interval
 
-        this_ft2_start = this_ft1_start - args.buffer
-
-        this_ft2_stop = this_ft1_stop + args.buffer
+        temp_ft1 = "__temp%s_ft1.fit" % (i)
 
         print this_ft1_start, this_ft1_stop, i
-        print this_ft2_start, this_ft2_stop, i
+
+        # Pre-cut the FT1 file for speed
+        cmd_line = "ftcopy '%s[EVENTS][TIME > %s && TIME < %s]' %s copyall=true " \
+                   "clobber=true" % (args.in_ft1, this_ft1_start - 1000.0, this_ft1_stop + 1000.0, temp_ft1)
+
+        # execute cut
+        execute_command(cmd_line)
 
         # cut ft1
+        out_ft1 = args.in_ft1.rsplit(".", 1)[0] + '_' + str(this_ft1_start) + '_ft1.fit'
 
         gtselect = GtApp('gtselect')
 
-        gtselect['infile'] = args.in_ft1
+        gtselect['infile'] = temp_ft1
 
-        gtselect['outfile'] = args.in_ft1.rsplit(".", 1)[0] + '_' + str(this_ft1_start) + '_ft1.fits'
+        gtselect['outfile'] = out_ft1
 
         gtselect['tmin'] = this_ft1_start
 
@@ -91,14 +98,33 @@ if __name__ == "__main__":
 
         gtselect.run()
 
-        #cut ft2
+        # Update this_ft1_start and this_ft1_stop to reflect what was actually considered by gtselect, which
+        # only considers good time intervals
+
+        # I switched these to a separate pair of variables because the ft1 wasnt iterating. It made sense at the time,
+        # but now I think I may have just covered up an underlying problem. Must double check.
+
+        with fits.open(out_ft1) as latest_ft1:
+
+            last_ft1_start = latest_ft1[0].header['TSTART']
+
+            last_ft1_stop = latest_ft1[0].header['TSTOP']
+
+        this_ft2_start = last_ft1_start - args.buffer
+
+        this_ft2_stop = last_ft1_stop + args.buffer
+
+        print last_ft1_start, last_ft1_stop, i
+        print this_ft2_start, this_ft2_stop, i
+
+        # cut ft2
 
         # prepare cut command
-        out_name = args.in_ft2.rsplit(".", 1)[0] + '_' + str(this_ft2_start) + '_ft2.fits'
+        out_name = args.in_ft2.rsplit(".", 1)[0] + '_' + str(this_ft2_start) + '_ft2.fit'
 
-        cmd_line = "ftcopy '%s[SC_DATA][START > %s && STOP < %s]' %s copyall=true" % (args.in_ft2, this_ft2_start,
-                                                                                                   this_ft2_stop,
-                                                                                                   out_name)
+        cmd_line = "ftcopy '%s[SC_DATA][START > %s && STOP < %s]' %s copyall=true" \
+                   " clobber=true" % (args.in_ft2, this_ft2_start, this_ft2_stop, out_name)
+
         # execute cut
         execute_command(cmd_line)
 
@@ -110,31 +136,33 @@ if __name__ == "__main__":
             starts = out_ft2['SC_DATA'].data.field("START")
             stops = out_ft2['SC_DATA'].data.field("STOP")
 
-            if starts.min() - this_ft1_start > 0:
+            if starts.min() - last_ft1_start > 0:
 
                 raise RuntimeError("FT2 file starts after the FT1 file")
 
-            if stops.max() - this_ft2_stop < 0:
+            if stops.max() - last_ft1_stop < 0:
 
                 raise RuntimeError("FT2 file stops before the end of the FT1 file")
 
             # Update the header
+            # This is not happening correctly.
+            # In the first ft2 produced, for example, it sets the tstop in the header to 2.4322e8; however, the last
+            # stop entry is 2.4324e8. This is what it is supposed to be (i.e. appropriately offset from
+            # corresponding ft1, but for some reason the header is not updating correctly.
+            # Update: checked last pair of ft files, again covered appropriate relative intervals (though padding on
+            # end was strangely high but might make sense due to SAA etc.), but header on ft2 is again not updating,
+            # it is still the same as the first ft2
 
-            out_ft2['SC_DATA'].header.set("TSTART",starts.min())
+            out_ft2['SC_DATA'].header.set("TSTART", starts.min())
             out_ft2['SC_DATA'].header.set("TSTOP", stops.max())
 
             out_ft2[0].header.set("TSTART", starts.min())
             out_ft2[0].header.set("TSTOP", stops.max())
 
-
-
-'''gtsel on ft1 and do ftcopy thing on ft2 master to get ft2s
-    then test whole thing on comp with data already have.
+'''test whole thing on comp with data already have.
     then test on farm with random day. remember to log on:
         ssh -X suli_students@galprop-cluster
         go to your dir and cat instructions
         follow them
     this is the ftcopy thing:
     ftcopy '/nfs/data1/fermi_dm_simulation/FT2_tothefuture_1095722779.36.fits[SC_DATA][START > 243215772.532 && STOP < 243226804.137]' output_ft2.fit copyall=true'''
-
-
