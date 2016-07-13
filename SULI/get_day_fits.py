@@ -102,6 +102,32 @@ if __name__ == "__main__":
         # execute cut
         execute_command(cmd_line)
 
+        # Verify that the command executed and update the header
+
+        with fits.open(out_name) as out_ft2:
+
+            # Check the start and stop in the binary table
+            starts = out_ft2['SC_DATA'].data.field("START")
+            stops = out_ft2['SC_DATA'].data.field("STOP")
+
+            if starts.min() - this_ft1_start > 0:
+
+                raise RuntimeError("FT2 file starts after the FT1 file")
+
+            if stops.max() - this_ft2_stop < 0:
+
+                raise RuntimeError("FT2 file stops before the end of the FT1 file")
+
+            # Update the header
+
+            out_ft2['SC_DATA'].header.set("TSTART",starts.min())
+            out_ft2['SC_DATA'].header.set("TSTOP", stops.max())
+
+            out_ft2[0].header.set("TSTART", starts.min())
+            out_ft2[0].header.set("TSTOP", stops.max())
+
+
+
 '''gtsel on ft1 and do ftcopy thing on ft2 master to get ft2s
     then test whole thing on comp with data already have.
     then test on farm with random day. remember to log on:
