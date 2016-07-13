@@ -102,34 +102,6 @@ if __name__ == "__main__":
         # execute cut
         execute_command(cmd_line)
 
-
-
-
-
-
-
-
-
-
-
-    '''for i in range(n_days_rounded):
-
-        this_ft2_start = event_file_start - args.buffer + i * args.interval
-
-        this_ft2_stop = event_file_start + args.buffer + (i + 1) * args.interval
-
-        print this_ft2_start, this_ft2_stop, i
-
-        # prepare cut command
-        out_name = args.in_ft2.rsplit(".", 1)[0] + '_' + str(this_start) + '_ft2.fits'
-
-        cmd_line = "ftcopy '%s[SC_DATA][START > %s && STOP < %s]' %s copyall=true" % (args.in_ft2, this_ft2_start,
-                                                                                                   this_ft2_stop,
-                                                                                                   out_name)
-        # execute cut
-        execute_command(cmd_line)'''
-
-
 '''gtsel on ft1 and do ftcopy thing on ft2 master to get ft2s
     then test whole thing on comp with data already have.
     then test on farm with random day. remember to log on:
