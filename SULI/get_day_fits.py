@@ -6,9 +6,10 @@
     transients using a bayesian blocks algorithm"""
 
 import argparse
+import os
+import numpy as np
 from GtApp import GtApp
 from astropy.io import fits
-import numpy as np
 from SULI.execute_command import execute_command
 
 # execute only if run from command line
@@ -50,7 +51,7 @@ if __name__ == "__main__":
 
     n_days_rounded = int(np.ceil(n_days))
 
-    print("Rounded up to %s" % n_days_rounded)
+    print("Rounded up to %s \n" % n_days_rounded)
 
     # iterate over input files creating new fits file for every 86400 seconds of data (24 hours)
 
@@ -60,7 +61,7 @@ if __name__ == "__main__":
 
         this_ft1_stop = event_file_start + (i + 1) * args.interval
 
-        temp_ft1 = "__temp%s_ft1.fit" % (i)
+        temp_ft1 = "__temp%s_ft1.fit" % i
 
         print "Intends to make ft1 cut beginning at %s, ending at %s (%sth cut)" % (this_ft1_start, this_ft1_stop, i)
 
@@ -89,7 +90,6 @@ if __name__ == "__main__":
         gtselect['zmax'] = args.zmax
 
         # Avoid cutting using an ROI
-
         gtselect['rad'] = 180.0
 
         # Avoid cutting in energy
@@ -98,11 +98,11 @@ if __name__ == "__main__":
 
         gtselect.run()
 
+        print "Removing temporary files"
+        os.remove(temp_ft1)
+
         # Update this_ft1_start and this_ft1_stop to reflect what was actually considered by gtselect, which
         # only considers good time intervals
-
-        # I switched these to a separate pair of variables because the ft1 wasnt iterating. It made sense at the time,
-        # but now I think I may have just covered up an underlying problem. Must double check.
 
         with fits.open(out_ft1) as latest_ft1:
 
@@ -114,7 +114,7 @@ if __name__ == "__main__":
 
         this_ft2_stop = last_ft1_stop + args.buffer
 
-        print "the ft1 just created begins at %s, ends at %s, and is the %sth ft1" % (last_ft1_start, last_ft1_stop, i)
+        print "\nFt1 cut begins at %s, ends at %s (%sth cut)" % (last_ft1_start, last_ft1_stop, i)
 
         # cut ft2
 
@@ -135,7 +135,7 @@ if __name__ == "__main__":
             starts = out_ft2['SC_DATA'].data.field("START")
             stops = out_ft2['SC_DATA'].data.field("STOP")
 
-            print 'ft2 begins at %s, ends at %s' % (starts.min(), stops.max())
+            print '\nFt2 begins at %s, ends at %s \n' % (starts.min(), stops.max())
 
             if starts.min() - last_ft1_start > 0:
 
@@ -145,14 +145,8 @@ if __name__ == "__main__":
 
                 raise RuntimeError("FT2 file stops before the end of the FT1 file")
 
-            # Update the header
-            # This is not happening correctly.
-            # In the first ft2 produced, for example, it sets the tstop in the header to 2.4322e8; however, the last
-            # stop entry is 2.4324e8. This is what it is supposed to be (i.e. appropriately offset from
-            # corresponding ft1, but for some reason the header is not updating correctly.
-            # Update: checked last pair of ft files, again covered appropriate relative intervals (though padding on
-            # end was strangely high but might make sense due to SAA etc.), but header on ft2 is again not updating,
-            # it is still the same as the first ft2
+        # Update the header
+        with fits.open(out_name, mode='update') as out_ft2:
 
             out_ft2['SC_DATA'].header.set("TSTART", starts.min())
             out_ft2['SC_DATA'].header.set("TSTOP", stops.max())
@@ -160,8 +154,9 @@ if __name__ == "__main__":
             out_ft2[0].header.set("TSTART", starts.min())
             out_ft2[0].header.set("TSTOP", stops.max())
 
+            '''header order is date-end, tstart, tstop, timesys'''
 '''test whole thing on comp with data already have.
-    then test on farm with random day. remember to log on:
+    then test on farm with random day. remember, to log on:
         ssh -X suli_students@galprop-cluster
         go to your dir and cat instructions
         follow them
