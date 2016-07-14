@@ -62,7 +62,7 @@ if __name__ == "__main__":
 
         temp_ft1 = "__temp%s_ft1.fit" % (i)
 
-        print this_ft1_start, this_ft1_stop, i
+        print "Intends to make ft1 cut beginning at %s, ending at %s (%sth cut)" % (this_ft1_start, this_ft1_stop, i)
 
         # Pre-cut the FT1 file for speed
         cmd_line = "ftcopy '%s[EVENTS][TIME > %s && TIME < %s]' %s copyall=true " \
@@ -114,8 +114,7 @@ if __name__ == "__main__":
 
         this_ft2_stop = last_ft1_stop + args.buffer
 
-        print last_ft1_start, last_ft1_stop, i
-        print this_ft2_start, this_ft2_stop, i
+        print "the ft1 just created begins at %s, ends at %s, and is the %sth ft1" % (last_ft1_start, last_ft1_stop, i)
 
         # cut ft2
 
@@ -135,6 +134,8 @@ if __name__ == "__main__":
             # Check the start and stop in the binary table
             starts = out_ft2['SC_DATA'].data.field("START")
             stops = out_ft2['SC_DATA'].data.field("STOP")
+
+            print 'ft2 begins at %s, ends at %s' % (starts.min(), stops.max())
 
             if starts.min() - last_ft1_start > 0:
 
