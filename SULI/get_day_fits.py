@@ -73,7 +73,7 @@ if __name__ == "__main__":
         execute_command(cmd_line)
 
         # cut ft1
-        out_ft1 = args.in_ft1.rsplit(".", 1)[0] + '_' + str(this_ft1_start) + '_ft1.fit'
+        out_ft1 = str(this_ft1_start) + '_ft1.fit'
 
         gtselect = GtApp('gtselect')
 
@@ -116,7 +116,7 @@ if __name__ == "__main__":
         # cut ft2
 
         # prepare cut command
-        out_name = args.in_ft2.rsplit(".", 1)[0] + '_' + str(this_ft2_start) + '_ft2.fit'
+        out_name = str(this_ft2_start) + '_ft2.fit'
 
         cmd_line = "ftcopy '%s[SC_DATA][START > %s && STOP < %s]' %s copyall=true" \
                    " clobber=true" % (args.in_ft2, this_ft2_start, this_ft2_stop, out_name)
