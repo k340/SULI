@@ -98,23 +98,20 @@ if __name__ == "__main__":
 
         gtselect.run()
 
-        print "Removing temporary files"
-        os.remove(temp_ft1)
-
         # Update this_ft1_start and this_ft1_stop to reflect what was actually considered by gtselect, which
         # only considers good time intervals
 
         with fits.open(out_ft1) as latest_ft1:
 
-            last_ft1_start = latest_ft1[0].header['TSTART']
+            this_ft1_start = latest_ft1[0].header['TSTART']
 
-            last_ft1_stop = latest_ft1[0].header['TSTOP']
+            this_ft1_stop = latest_ft1[0].header['TSTOP']
 
-        this_ft2_start = last_ft1_start - args.buffer
+        this_ft2_start = this_ft1_start - args.buffer
 
-        this_ft2_stop = last_ft1_stop + args.buffer
+        this_ft2_stop = this_ft1_stop + args.buffer
 
-        print "\nFt1 cut begins at %s, ends at %s (%sth cut)" % (last_ft1_start, last_ft1_stop, i)
+        print "\nFt1 cut begins at %s, ends at %s (%sth cut)" % (this_ft1_start, this_ft1_stop, i)
 
         # cut ft2
 
@@ -137,13 +134,16 @@ if __name__ == "__main__":
 
             print '\nFt2 begins at %s, ends at %s \n' % (starts.min(), stops.max())
 
-            if starts.min() - last_ft1_start > 0:
+            if starts.min() - this_ft1_start > 0:
 
                 raise RuntimeError("FT2 file starts after the FT1 file")
 
-            if stops.max() - last_ft1_stop < 0:
+            if stops.max() - this_ft1_stop < 0:
 
                 raise RuntimeError("FT2 file stops before the end of the FT1 file")
+
+        print "Removing temporary file"
+        os.remove(temp_ft1)
 
         # Update the header
         with fits.open(out_name, mode='update') as out_ft2:
