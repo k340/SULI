@@ -31,6 +31,9 @@ if __name__ == "__main__":
     parser.add_argument("--loglevel", help="Level of log detail (DEBUG, INFO)",default='info')
     parser.add_argument("--logfile", help="Name of logfile for the ltfsearch.py script",default='ltfsearch.log')
     parser.add_argument("--workdir", help="Path of work directory",default=os.getcwd())
+
+    ### The Zenith cut is defined in the configuration.txt file of ltfsearch
+
     # parser.add_argument("--zmax", help="Maximum zenith allowed for data to be considered", required=True, type=float)
 
     # parse the arguments
