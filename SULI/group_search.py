@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-"""This script runs search_for_transients.py on all fits file pairs in folder passed as argument"""
+"""This script runs search_for_transients.py on all fits file pairs in folder passed as argument
+    This is obviously only appropriately used for simulated data"""
 
 import argparse
 from astropy.io import fits
