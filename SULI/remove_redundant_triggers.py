@@ -117,7 +117,7 @@ def check_nearest(regions, min_dist):
     # flag as true to increment counter
     increment_i = True
 
-    # import pdb;pdb.set_trace()
+    import pdb;pdb.set_trace()
 
     # for each region in inp_list:
     while i in range(len(regions)):
