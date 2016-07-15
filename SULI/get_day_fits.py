@@ -28,8 +28,8 @@ if __name__ == "__main__":
                                          "it covers a time interval >= Ft1", required=True, type=float)
     parser.add_argument("--evclass", help="Event class to use for cutting the data (default: 128)", required=True,
                         type=int)
-    parser.add_argument("--zmax", help="Zenith cut for the events", required=True,
-                        type=float)
+    parser.add_argument("--zmax", help="Zenith cut for the events", required=False,
+                        type=float, default=180)
     parser.add_argument("--interval", help="Length of time interval covered by output files (default 24 hours)",
                         type=float, default=86400.0)
 
