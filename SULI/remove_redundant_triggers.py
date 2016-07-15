@@ -11,7 +11,7 @@
     and secondarily by the count rate in the highest count-density bin"""
 
 import numpy as np
-from math import *
+# from math import *
 import argparse
 from astropy.coordinates import SkyCoord
 import astropy.units as u
@@ -60,9 +60,6 @@ def find_most_significant_bin(inp_region):
     in the list
     """
 
-    rate_max = 0
-    bin_max = 0
-
     # converts tstarts, etc. entry for i into a readable list
     
     region_starts = np.array(map(float, inp_region['tstarts'].split(",")))
@@ -82,6 +79,8 @@ def find_most_significant_bin(inp_region):
     # A serial version of the same
     # for k in range(bins(inp_region)):
     #
+    #     rate_max = 0
+    #     bin_max = 0
     #     # if bin has higher count rate than previous highest,
     #     # set its rate as highest and tag it as brightest bin
     #
@@ -211,7 +210,7 @@ def check_nearest(regions, min_dist):
     return regions
 
 # execute only if run from command line
-if __name__=="__main__":
+if __name__ == "__main__":
 
     # create parser for this script
     parser = argparse.ArgumentParser('Remove redundant triggers which overlap spatially and temporally. For each group '
