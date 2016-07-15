@@ -28,11 +28,11 @@ if __name__ == "__main__":
                         required=True)
     parser.add_argument("--out_file", help="Name of text file containing list of possible transients", type=str,
                         required=True)
-    parser.add_argument("--loglevel", help="Level of log detail (DEBUG, INFO)",default='info')
-    parser.add_argument("--logfile", help="Name of logfile for the ltfsearch.py script",default='ltfsearch.log')
-    parser.add_argument("--workdir", help="Path of work directory",default=os.getcwd())
+    parser.add_argument("--loglevel", help="Level of log detail (DEBUG, INFO)", default='info')
+    parser.add_argument("--logfile", help="Name of logfile for the ltfsearch.py script", default='ltfsearch.log')
+    parser.add_argument("--workdir", help="Path of work directory", default=os.getcwd())
 
-    ### The Zenith cut is defined in the configuration.txt file of ltfsearch
+    # (The Zenith cut is defined in the configuration.txt file of ltfsearch)
 
     # parser.add_argument("--zmax", help="Maximum zenith allowed for data to be considered", required=True, type=float)
 
@@ -77,9 +77,9 @@ if __name__ == "__main__":
         # bayesian blocks
 
         cmd_line = 'ltfsearch.py --date %s --duration %s --irfs %s --probability %s --loglevel %s --logfile %s ' \
-                   '--workdir %s --outfile %s --ft1 %s --ft2 %s' %(sim_start, dur, args.irf, args.probability,
-                                                                   args.loglevel, args.logfile, args.workdir,
-                                                                   temp_file, ft1_name, ft2_name)
+                   '--workdir %s --outfile %s --ft1 %s --ft2 %s' % (sim_start, dur, args.irf, args.probability,
+                                                                    args.loglevel, args.logfile, args.workdir,
+                                                                    temp_file, ft1_name, ft2_name)
 
         execute_command(cmd_line)
 
@@ -89,3 +89,5 @@ if __name__ == "__main__":
                                                                                                           args.out_file)
 
         execute_command(cmd_line)
+
+    print "Search complete. Results in %s" % args.out_file
