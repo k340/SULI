@@ -230,7 +230,7 @@ if __name__=="__main__":
         # The file contains only one line. In that case, unfortunately, recfromtxt does not produce
         # an array of lines, but just one line. Fix that
         data = np.array([data])
-    
+
     # check for multiple triggers by same event,
     result = check_nearest(data, args.min_dist)
 
