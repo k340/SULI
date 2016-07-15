@@ -113,6 +113,17 @@ if __name__ == "__main__":
 
         print "\nFt1 cut begins at %s, ends at %s (%sth cut)" % (this_ft1_start, this_ft1_stop, i)
 
+        # Update the PROC_VER keyword if we are dealing with simulated data
+        with fits.open(out_ft1, mode='update') as fits_file:
+
+            if int(fits_file[0].header.get("PROC_VER")) < 100:
+
+                # Simulated data
+
+                print("Deadling with simulated data. Updating the PROC_VER keyword to '302'... ")
+
+                fits_file[0].header.set("PROC_VER", "302")
+
         # cut ft2
 
         # prepare cut command
