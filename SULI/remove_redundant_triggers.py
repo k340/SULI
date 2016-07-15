@@ -225,6 +225,12 @@ if __name__=="__main__":
     # get input data file from parser and convert to record array
     data = np.recfromtxt(args.in_list, names=True, usemask=False)
 
+    if len(data.shape) == 0:
+
+        # The file contains only one line. In that case, unfortunately, recfromtxt does not produce
+        # an array of lines, but just one line. Fix that
+        data = np.array([data])
+    
     # check for multiple triggers by same event,
     result = check_nearest(data, args.min_dist)
 
