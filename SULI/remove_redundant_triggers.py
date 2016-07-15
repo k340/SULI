@@ -117,6 +117,8 @@ def check_nearest(regions, min_dist):
     # flag as true to increment counter
     increment_i = True
 
+    import pdb;pdb.set_trace()
+
     # for each region in inp_list:
     while i in range(len(regions)):
 
@@ -169,7 +171,7 @@ def check_nearest(regions, min_dist):
                     if id_rate_i != id_rate_j:
 
                         raise RuntimeError("Bin %s and bin %s are overlapping in space, but their maximum rate is not "
-                                           "overlapping in time. This should never happen.")
+                                           "overlapping in time. This should never happen." % (i, j))
 
                     # check if highest rate in i > than in j
                     elif max_rate_i >= max_rate_j:

@@ -165,7 +165,8 @@ if __name__ == "__main__":
             out_ft2[0].header.set("TSTART", starts.min())
             out_ft2[0].header.set("TSTOP", stops.max())
 
-            '''header order is date-end, tstart, tstop, timesys'''
+    print "Finished"
+
 '''test whole thing on comp with data already have.
     then test on farm with random day. remember, to log on:
         ssh -X suli_students@galprop-cluster
