@@ -117,7 +117,7 @@ def check_nearest(regions, min_dist):
     # flag as true to increment counter
     increment_i = True
 
-    import pdb;pdb.set_trace()
+    # import pdb;pdb.set_trace()
 
     # for each region in inp_list:
     while i in range(len(regions)):
@@ -126,7 +126,7 @@ def check_nearest(regions, min_dist):
         j = 1
 
         # look at each subsequent region j
-        # (we start from i+1 to avoid checking twice for overlapping regions)
+        # (start from i+1 to avoid checking twice for overlapping regions)
 
         while j in range(i + 1, len(regions)):
 
@@ -138,7 +138,7 @@ def check_nearest(regions, min_dist):
                 # first see if one has more bins; this means it is more significant
                 if bins(regions[j]) != bins(regions[i]):
 
-                    # i has more bins than j, it is therefore more significant
+                    # if i has more bins than j, it is therefore more significant
                     # remove j from list; do not inc j so as not to skip next list element
                     if bins(regions[j]) < bins(regions[i]):
 
@@ -160,12 +160,16 @@ def check_nearest(regions, min_dist):
 
                     # regions[i] and regions[j] have the same number of time bins
                     # find the bin in each with highest count rate; make sure highest bins are at the
-                    # same place in terms of bin order unsure if this accounts for cases where time bins are
+                    # same place in terms of bin order; unsure if this accounts for cases where time bins are
                     # completely incogruent between regions i and j
 
                     # get most significant bin from region i and its rate; do same with j
                     max_rate_i, id_rate_i = find_most_significant_bin(regions[i])
                     max_rate_j, id_rate_j = find_most_significant_bin(regions[j])
+
+                    # debug
+
+                    print "i = %s, j = %s, will now raise error if %s != %s" % (i, j, id_rate_i, id_rate_j)
 
                     # check if the i bin is same place in terms of bin order as j
                     if id_rate_i != id_rate_j:
@@ -190,7 +194,7 @@ def check_nearest(regions, min_dist):
 
                 # Regions i and j do not overlap
 
-                # if nothing was removed from list, inc j to check next region
+                # nothing was removed from list, inc j to check next region
                 j += 1
 
         # if i wasn't removed, so increment_i was never set to false, increment_i to check next region

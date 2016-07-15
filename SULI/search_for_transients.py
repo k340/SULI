@@ -67,9 +67,6 @@ if __name__ == "__main__":
         ft1_name = os.path.abspath(os.path.expandvars(os.path.expanduser(args.inp_fts.rsplit(",", 1)[0])))
         ft2_name = os.path.abspath(os.path.expandvars(os.path.expanduser(args.inp_fts.rsplit(",", 1)[1])))
 
-        sim_start = 0
-        sim_end = 1
-
         with fits.open(str(ft1_name)) as ft1:
 
             sim_start = ft1[0].header['TSTART']

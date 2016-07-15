@@ -166,11 +166,3 @@ if __name__ == "__main__":
             out_ft2[0].header.set("TSTOP", stops.max())
 
     print "Finished"
-
-'''test whole thing on comp with data already have.
-    then test on farm with random day. remember, to log on:
-        ssh -X suli_students@galprop-cluster
-        go to your dir and cat instructions
-        follow them
-    this is the ftcopy thing:
-    ftcopy '/nfs/data1/fermi_dm_simulation/FT2_tothefuture_1095722779.36.fits[SC_DATA][START > 243215772.532 && STOP < 243226804.137]' output_ft2.fit copyall=true'''
