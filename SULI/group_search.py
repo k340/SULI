@@ -30,8 +30,7 @@ if __name__ == "__main__":
     parser.add_argument("--workdir", help="Path of work directory", default=os.getcwd())
 
     # parse the arguments
-    args = parser.parse_args(['--directory', '/media/sf_VM_shared/tests/', '--irf', 'P8_SOURCE_V6', '--probability',
-                              '1e-5', '--min_dist', '10'])
+    args = parser.parse_args()
 
     files = [f for f in listdir(args.directory) if (str(join(args.directory, f)).endswith(('.fits', '.fit')))]
     files.sort()
