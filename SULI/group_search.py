@@ -62,7 +62,7 @@ if __name__ == "__main__":
     for i in range(len(ft1_files)):
 
         # use start time of ft1 for outfile name, since ft2 starts early due to buffer
-        with fits.open(args.directory + '/' + ft1_files[i]) as ft1:
+        with fits.open(args.ft1folder + '/' + ft1_files[i]) as ft1:
 
             file_start = ft1[0].header['TSTART']
 
