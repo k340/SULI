@@ -90,4 +90,6 @@ if __name__ == "__main__":
 
         execute_command(cmd_line)
 
+    os.remove(temp_file)
+
     print "Search complete. Results in %s" % args.out_file

@@ -32,23 +32,43 @@ if __name__ == "__main__":
     # parse the arguments
     args = parser.parse_args()
 
-    files = [f for f in listdir(args.directory) if (str(join(args.directory, f)).endswith(('.fits', '.fit')))]
-    files.sort()
+    # get list of ft1 files
+    ft1_files = [f for f in listdir(args.directory) if (str(join(args.directory, f)).endswith(('ft1.fits', 'ft1.fit')))]
+    ft1_files.sort()
 
-    for i in range(len(files) / 2):
+    # get list of ft2 files
+    ft2_files = [f for f in listdir(args.directory) if (str(join(args.directory, f)).endswith(('ft2.fits', 'ft2.fit')))]
+    ft2_files.sort()
 
-        # ft2 always start before ft1, so come first alphabetically
+    # make sure each ft1/ft2 is part of a pair
+    if len(ft1_files) != len(ft2_files):
 
-        nft2 = 2 * i
-        nft1 = 2 * i + 1
+        if len(ft1_files) > len(ft2_files):
 
-        with fits.open(files[nft2]) as ft2:
-            file_start = ft2[0].header['TSTART']
+            x = 'ft1 files'
+            y = 'ft2 files'
+
+        else:
+
+            x = 'ft2 files'
+            y = 'ft1 files'
+
+        raise RuntimeError('There are more %s than %s' % (x, y))
+
+    # for each ft1 in folder, run search_for_transients.py using it and its partner ft2 as arguments
+    # assumes all ft files are paired and ordered
+    for i in range(len(ft1_files)):
+
+        # use start time of ft1 for outfile name, since ft2 starts early due to buffer
+        with fits.open(ft1_files[i]) as ft1:
+
+            file_start = ft1[0].header['TSTART']
 
         out_name = str(file_start) + '.txt'
 
-        cmd_line = 'search_for_transients.py --inp_fts %s,%s --irf %s --probability %s --min_dist %s ' \
-                   '--out_file %s' % (args.directory + files[nft1], args.directory + files[nft2], args.irf,
-                                      args.min_dist, args.probability, out_name)
+        cmd_line = 'search_for_transients.py --inp_fts %s,%s --irf %s --probability %s --min_dist %s --out_file %s' % (
+                                                                args.directory + ft1_files[i],
+                                                                args.directory + ft2_files[i], args.irf, args.min_dist,
+                                                                args.probability, out_name)
 
         execute_command(cmd_line)
