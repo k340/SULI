@@ -35,11 +35,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # get list of ft1 files
-    ft1_files = [f for f in listdir(args.directory) if (str(join(args.ft1folder, f)).endswith(('ft1.fits', 'ft1.fit')))]
+    ft1_files = [f for f in listdir(args.ft1folder) if (str(join(args.ft1folder, f)).endswith(('ft1.fits', 'ft1.fit')))]
     ft1_files.sort()
 
     # get list of ft2 files
-    ft2_files = [f for f in listdir(args.directory) if (str(join(args.ft2folder, f)).endswith(('ft2.fits', 'ft2.fit')))]
+    ft2_files = [f for f in listdir(args.ft2folder) if (str(join(args.ft2folder, f)).endswith(('ft2.fits', 'ft2.fit')))]
     ft2_files.sort()
 
     # make sure each ft1/ft2 is part of a pair
