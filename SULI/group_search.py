@@ -35,11 +35,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # get list of ft1 files
-    ft1_files = [f for f in listdir(args.directory) if (str(join(args.directory, f)).endswith(('ft1.fits', 'ft1.fit')))]
+    ft1_files = [f for f in listdir(args.directory) if (str(join(args.ft1folder, f)).endswith(('ft1.fits', 'ft1.fit')))]
     ft1_files.sort()
 
     # get list of ft2 files
-    ft2_files = [f for f in listdir(args.directory) if (str(join(args.directory, f)).endswith(('ft2.fits', 'ft2.fit')))]
+    ft2_files = [f for f in listdir(args.directory) if (str(join(args.ft2folder, f)).endswith(('ft2.fits', 'ft2.fit')))]
     ft2_files.sort()
 
     # make sure each ft1/ft2 is part of a pair
@@ -69,8 +69,8 @@ if __name__ == "__main__":
         out_name = str(file_start) + '.txt'
 
         cmd_line = 'search_for_transients.py --inp_fts %s,%s --irf %s --probability %s --min_dist %s --out_file %s' % (
-                                                                args.directory + '/' + ft1_files[i],
-                                                                args.directory + '/' + ft2_files[i], args.irf, args.min_dist,
+                                                                args.ft1folder + '/' + ft1_files[i],
+                                                                args.ft2folder + '/' + ft2_files[i], args.irf, args.min_dist,
                                                                 args.probability, out_name)
 
         execute_command(cmd_line)
