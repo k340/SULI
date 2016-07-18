@@ -57,20 +57,26 @@ if __name__ == "__main__":
 
         raise RuntimeError('There are more %s than %s' % (x, y))
 
-    # for each ft1 in folder, run search_for_transients.py using it and its partner ft2 as arguments
-    # assumes all ft files are paired and ordered
-    for i in range(len(ft1_files)):
+    else:
 
-        # use start time of ft1 for outfile name, since ft2 starts early due to buffer
-        with fits.open(args.ft1folder + '/' + ft1_files[i]) as ft1:
+        # for each ft1 in folder, run search_for_transients.py using it and its partner ft2 as arguments
+        # assumes all ft files are paired and ordered
 
-            file_start = ft1[0].header['TSTART']
+        print 'Found ' + str(len(ft1_files)) + ' fits pairs\n'
 
-        out_name = str(file_start) + '.txt'
+        for i in range(len(ft1_files)):
 
-        cmd_line = 'search_for_transients.py --inp_fts %s,%s --irf %s --probability %s --min_dist %s --out_file %s' % (
-                                                                args.ft1folder + '/' + ft1_files[i],
-                                                                args.ft2folder + '/' + ft2_files[i], args.irf,
-                                                                args.probability, args.min_dist, out_name)
+            # use start time of ft1 for outfile name, since ft2 starts early due to buffer
+            with fits.open(args.ft1folder + '/' + ft1_files[i]) as ft1:
 
-        execute_command(cmd_line)
+                file_start = ft1[0].header['TSTART']
+
+            out_name = str(file_start) + '.txt'
+
+            print 'Preparing Bayesian blocks analysis on fits pair %s of %s...\n' % (i, str(len(ft1_files)))
+
+            cmd_line = 'search_for_transients.py --inp_fts %s,%s --irf %s --probability %s --min_dist %s ' \
+                       '--out_file %s' % (args.ft1folder + '/' + ft1_files[i], args.ft2folder + '/' + ft2_files[i],
+                                          args.irf, args.probability, args.min_dist, out_name)
+
+            execute_command(cmd_line)
