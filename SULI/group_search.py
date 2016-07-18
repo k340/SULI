@@ -18,7 +18,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser('Search input folder')
 
     # add the arguments needed to the parser
-    parser.add_argument("--directory", help="Location of files to be searched", type=str,
+    parser.add_argument("--ft1folder", help="Location of ft1 files to be searched", type=str,
+                        required=True)
+    parser.add_argument("--ft2folder", help="Location of ft2 files to be searched", type=str,
                         required=True)
     parser.add_argument("--irf", help="Instrument response function name to be used", type=str,
                         required=True)
