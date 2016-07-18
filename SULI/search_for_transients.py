@@ -92,4 +92,4 @@ if __name__ == "__main__":
 
     os.remove(temp_file)
 
-    print "Search complete. Results in %s" % args.out_file
+    print "\nSearch complete. Results in %s" % args.out_file
