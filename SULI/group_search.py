@@ -70,7 +70,7 @@ if __name__ == "__main__":
 
         cmd_line = 'search_for_transients.py --inp_fts %s,%s --irf %s --probability %s --min_dist %s --out_file %s' % (
                                                                 args.ft1folder + '/' + ft1_files[i],
-                                                                args.ft2folder + '/' + ft2_files[i], args.irf, args.min_dist,
-                                                                args.probability, out_name)
+                                                                args.ft2folder + '/' + ft2_files[i], args.irf,
+                                                                args.probability, args.min_dist, out_name)
 
         execute_command(cmd_line)
