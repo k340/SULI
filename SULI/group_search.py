@@ -60,15 +60,15 @@ if __name__ == "__main__":
     for i in range(len(ft1_files)):
 
         # use start time of ft1 for outfile name, since ft2 starts early due to buffer
-        with fits.open(ft1_files[i]) as ft1:
+        with fits.open(args.directory + '/' + ft1_files[i]) as ft1:
 
             file_start = ft1[0].header['TSTART']
 
         out_name = str(file_start) + '.txt'
 
         cmd_line = 'search_for_transients.py --inp_fts %s,%s --irf %s --probability %s --min_dist %s --out_file %s' % (
-                                                                args.directory + ft1_files[i],
-                                                                args.directory + ft2_files[i], args.irf, args.min_dist,
+                                                                args.directory + '/' + ft1_files[i],
+                                                                args.directory + '/' + ft2_files[i], args.irf, args.min_dist,
                                                                 args.probability, out_name)
 
         execute_command(cmd_line)
