@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 """This script scans .txt files (from search_for_transients) in a specified directory and returns a list of files
-    containing detections. It can also display the contents of all files in the terminal (optional)"""
+    containing detections. It can also display the contents of all files in the terminal and copy them to another
+    folder (optional)."""
 
 import argparse
 import numpy as np
@@ -23,7 +24,7 @@ if __name__ == "__main__":
                         default=False)
     parser.add_argument("--mode", help="If Active, will pause and prompt user to continue upon finding a day with more"
                                        "detections than threshold; if Passive, will create text file list of such day"
-                                       "files. Active by default", type=str, default='Active')
+                                       "files. Active by default", type=str, default='Single')
     parser.add_argument("--threshold", help="Number of detections required for a day to be flagged; 1 by default",
                         type=int, default=1)
 
@@ -46,7 +47,13 @@ if __name__ == "__main__":
 
             if args.mode == 'Active':
 
+                # pause
                 pass
+
+            elif args.mode == 'Passive':
+
+                # add files to interesting folder
+                cmd = 'mkdir detections'
 
         # display file contents regardless
         if args.display is True:
@@ -60,6 +67,7 @@ if __name__ == "__main__":
         print '\nNo anomalous detections'
 
     else:
+
         print 'The following files have detections:\n'
 
         for i in range(len(interesting_files)):

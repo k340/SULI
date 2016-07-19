@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-"""Will run get_day_fits, group_search, and flag detections if I decide to actually write it"""
+"""Will run get_day_fits, group_search, and flag detections if I decide to actually write it. Should be run from final
+    destination directory"""
 
 # go to 24h_fits
 # create session folder

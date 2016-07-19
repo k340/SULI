@@ -103,9 +103,11 @@ if __name__ == "__main__":
 
         with fits.open(out_ft1) as latest_ft1:
 
-            this_ft1_start = latest_ft1[0].header['TSTART']
+            this_ft1_start = max(latest_ft1[0].header['TSTART'],
+                                 latest_ft1['GTI'].data.START.min())
 
-            this_ft1_stop = latest_ft1[0].header['TSTOP']
+            this_ft1_stop = min(latest_ft1[0].header['TSTOP'],
+                                latest_ft1['GTI'].data.STOP.max())
 
         this_ft2_start = this_ft1_start - args.buffer
 
