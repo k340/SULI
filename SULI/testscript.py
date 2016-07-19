@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-"this is a test script that prints whatever argument is passed to it from the command line"
+"""this is a test script that prints whatever argument is passed to it from the command line"""
 
 import argparse
 
-if __name__=="__main__":
+if __name__ == "__main__":
 
     parser = argparse.ArgumentParser('test')
 

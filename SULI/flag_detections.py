@@ -19,7 +19,13 @@ if __name__ == "__main__":
     # add the arguments needed to the parser
     parser.add_argument("--directory", help="Location of files to be searched", type=str,
                         required=True)
-    parser.add_argument("--display", help="Set to [True] to display file contents in terminal", type=bool)
+    parser.add_argument("--display", help="Set to [True] to display file contents in terminal", type=bool,
+                        default=False)
+    parser.add_argument("--mode", help="If Active, will pause and prompt user to continue upon finding a day with more"
+                                       "detections than threshold; if Passive, will create text file list of such day"
+                                       "files. Active by default", type=str, default='Active')
+    parser.add_argument("--threshold", help="Number of detections required for a day to be flagged; 1 by default",
+                        type=int, default=1)
 
     # parse the arguments
     args = parser.parse_args()
@@ -34,16 +40,31 @@ if __name__ == "__main__":
 
         active_file_detections = np.recfromtxt(args.directory + '/' + files[i], names=True, usemask=False)
 
-        if len(active_file_detections) != 0:
+        if len(active_file_detections) >= args.threshold:
+
             interesting_files.append(files[i])
+
+            if args.mode == 'Active':
+
+                pass
 
         # display file contents regardless
         if args.display is True:
+
+            print '%s:' % files[i]
             cmd_line = 'cat %s' % files[i]
             subprocess.check_call(cmd_line, shell=True)
 
-    print 'The following files have detections:\n'
+    if len(interesting_files) == 0:
 
-    for i in range(len(interesting_files)):
-        active_file_detections = np.recfromtxt(args.directory + '/' + interesting_files[i], names=True, usemask=False)
-        print '%s (%s detections)' % (interesting_files[i], len(active_file_detections))
+        print '\nNo anomalous detections'
+
+    else:
+        print 'The following files have detections:\n'
+
+        for i in range(len(interesting_files)):
+
+            active_file_detections = np.recfromtxt(args.directory + '/' + interesting_files[i], names=True,
+                                                   usemask=False)
+
+            print '%s (%s detections)' % (interesting_files[i], len(active_file_detections))
