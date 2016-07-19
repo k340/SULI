@@ -22,7 +22,7 @@ if __name__ == "__main__":
     parser.add_argument("--display", help="Set to [True] to display file contents in terminal", type=bool)
 
     # parse the arguments
-    args = parser.parse_args(['--directory', '/media/sf_VM_shared/tests/flag_tests', '--display', 'True'])
+    args = parser.parse_args()
 
     # get list of all .txt files in directory
     files = [f for f in listdir(args.directory) if (str(join(args.directory, f)).endswith('.txt'))]
