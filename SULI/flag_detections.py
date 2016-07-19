@@ -36,20 +36,24 @@ if __name__ == "__main__":
     # flag all files with events
     interesting_files = []
 
+    # for all day files
     for i in range(len(files)):
 
+        # get the contents of file
         active_file_detections = np.recfromtxt(args.directory + '/' + files[i], names=True, usemask=False)
 
+        # if it is not empty, add t o list of notable files
         if len(active_file_detections) >= args.threshold:
 
             interesting_files.append(files[i])
 
+            # and write to out_file if specified
             if args.out_file != 'none':
 
                 # create out_file
                 pass
 
-        # display file contents regardless
+        # display file contents regardless, if specified
         if args.display is True:
 
             print '%s:' % files[i]

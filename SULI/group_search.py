@@ -43,6 +43,7 @@ if __name__ == "__main__":
     # make sure each ft1/ft2 is part of a pair
     if len(ft1_files) != len(ft2_files):
 
+        # determine which type there is more of for error msg
         if len(ft1_files) > len(ft2_files):
 
             x = 'ft1 files'
