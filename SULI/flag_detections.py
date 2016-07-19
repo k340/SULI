@@ -22,9 +22,8 @@ if __name__ == "__main__":
                         required=True)
     parser.add_argument("--display", help="Set to [True] to display file contents in terminal", type=bool,
                         default=False)
-    parser.add_argument("--mode", help="If Active, will pause and prompt user to continue upon finding a day with more"
-                                       "detections than threshold; if Passive, will create text file list of such day"
-                                       "files. Active by default", type=str, default='Single')
+    parser.add_argument("--out_file", help="If defined, name of txt file with path/name of files with detections",
+                        type=str, default='none')
     parser.add_argument("--threshold", help="Number of detections required for a day to be flagged; 1 by default",
                         type=int, default=1)
 
@@ -45,15 +44,10 @@ if __name__ == "__main__":
 
             interesting_files.append(files[i])
 
-            if args.mode == 'Active':
+            if args.out_file != 'none':
 
-                # pause
+                # create out_file
                 pass
-
-            elif args.mode == 'Passive':
-
-                # add files to interesting folder
-                cmd = 'mkdir detections'
 
         # display file contents regardless
         if args.display is True:

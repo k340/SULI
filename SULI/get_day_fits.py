@@ -66,7 +66,7 @@ if __name__ == "__main__":
         print "Intends to make ft1 cut beginning at %s, ending at %s (%sth cut)" % (this_ft1_start, this_ft1_stop, i)
 
         # Pre-cut the FT1 file for speed
-        cmd_line = "ftcopy '%s[EVENTS][TIME > %s && TIME < %s]' %s copyall=true " \
+        cmd_line = "ftcopy '%s[EVENTS][TIME >= %s && TIME =< %s]' %s copyall=true " \
                    "clobber=true" % (args.in_ft1, this_ft1_start - 1000.0, this_ft1_stop + 1000.0, temp_ft1)
 
         # execute cut
@@ -131,7 +131,7 @@ if __name__ == "__main__":
         # prepare cut command
         out_name = str(this_ft2_start) + '_ft2.fit'
 
-        cmd_line = "ftcopy '%s[SC_DATA][START > %s && STOP < %s]' %s copyall=true" \
+        cmd_line = "ftcopy '%s[SC_DATA][START >= %s && STOP =< %s]' %s copyall=true" \
                    " clobber=true" % (args.in_ft2, this_ft2_start, this_ft2_stop, out_name)
 
         # execute cut

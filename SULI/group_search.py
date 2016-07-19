@@ -7,7 +7,7 @@ import argparse
 from astropy.io import fits
 import os
 from os import listdir
-from os.path import isfile, join
+from os.path import join
 
 from SULI.execute_command import execute_command
 

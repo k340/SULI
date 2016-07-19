@@ -14,3 +14,4 @@
 # group_search on corresponding month folder in 24h_fits
 
 # flag_detections on output of group_search
+
