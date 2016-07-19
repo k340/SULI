@@ -18,9 +18,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser('Search input folder')
 
     # add the arguments needed to the parser
-    parser.add_argument("--ft1folder", help="Location of ft1 files to be searched", type=str,
-                        required=True)
-    parser.add_argument("--ft2folder", help="Location of ft2 files to be searched", type=str,
+    parser.add_argument("--directory", help="Location of ft1, ft2 files to be searched", type=str,
                         required=True)
     parser.add_argument("--irf", help="Instrument response function name to be used", type=str,
                         required=True)
@@ -35,11 +33,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # get list of ft1 files
-    ft1_files = [f for f in listdir(args.ft1folder) if (str(join(args.ft1folder, f)).endswith(('ft1.fits', 'ft1.fit')))]
+    ft1_files = [f for f in listdir(args.directory) if (str(join(args.directory, f)).endswith(('ft1.fits', 'ft1.fit')))]
     ft1_files.sort()
 
     # get list of ft2 files
-    ft2_files = [f for f in listdir(args.ft2folder) if (str(join(args.ft2folder, f)).endswith(('ft2.fits', 'ft2.fit')))]
+    ft2_files = [f for f in listdir(args.directory) if (str(join(args.directory, f)).endswith(('ft2.fits', 'ft2.fit')))]
     ft2_files.sort()
 
     # make sure each ft1/ft2 is part of a pair
@@ -67,7 +65,7 @@ if __name__ == "__main__":
         for i in range(len(ft1_files)):
 
             # use start time of ft1 for outfile name, since ft2 starts early due to buffer
-            with fits.open(args.ft1folder + '/' + ft1_files[i]) as ft1:
+            with fits.open(args.directory + '/' + ft1_files[i]) as ft1:
 
                 file_start = ft1[0].header['TSTART']
 
@@ -76,7 +74,7 @@ if __name__ == "__main__":
             print 'Preparing Bayesian blocks analysis on fits pair %s of %s...\n' % (i, str(len(ft1_files)))
 
             cmd_line = 'search_for_transients.py --inp_fts %s,%s --irf %s --probability %s --min_dist %s ' \
-                       '--out_file %s' % (args.ft1folder + '/' + ft1_files[i], args.ft2folder + '/' + ft2_files[i],
+                       '--out_file %s' % (args.directory + '/' + ft1_files[i], args.directory + '/' + ft2_files[i],
                                           args.irf, args.probability, args.min_dist, out_name)
 
             execute_command(cmd_line)
