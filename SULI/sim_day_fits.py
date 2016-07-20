@@ -79,8 +79,8 @@ if __name__ == "__main__":
         # The simulation neeeds an environment variable called SKYMODEL_DIR
         os.environ['SKYMODEL_DIR'] = args.src_dir
 
-        cmd_line = "gtobssim infile=%s/%s " \
-                   "srclist=%s/%s " \
+        cmd_line = "gtobssim infile=%s " \
+                   "srclist=%s " \
                    "scfile=%s " \
                    "evroot=%s " \
                    "simtime=%s " \
@@ -92,8 +92,8 @@ if __name__ == "__main__":
                    "irfs=P8R2_SOURCE_V6 " \
                    "evtype=none maxrows=1000000 " \
                    "seed=%s " \
-                   "chatter=5" % (args.src_dir, args.xml, args.src_dir, args.source, out_ft2, str(int(this_ft1_start)),
-                                  args.interval, this_ft1_start, int(this_ft1_start))
+                   "chatter=5" % (os.path.join(args.src_dir, args.xml), os.path.join(args.src_dir, args.source),
+                                  out_ft2, str(int(this_ft1_start)), args.interval, this_ft1_start, int(this_ft1_start))
 
         # execute simulation
         execute_command(cmd_line)
