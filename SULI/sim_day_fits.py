@@ -92,8 +92,8 @@ if __name__ == "__main__":
                    "irfs=P8R2_SOURCE_V6 " \
                    "evtype=none maxrows=1000000 " \
                    "seed=%s " \
-                   "chatter=5" % (args.src_dir, args.xml, args.src_dir, args.source, out_ft2, str(int(args.tstart)),
-                                  args.interval, args.tstart, int(args.tstart))
+                   "chatter=5" % (args.src_dir, args.xml, args.src_dir, args.source, out_ft2, str(int(this_ft1_start)),
+                                  args.interval, this_ft1_start, int(this_ft1_start))
 
         # execute simulation
         execute_command(cmd_line)
