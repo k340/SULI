@@ -93,7 +93,7 @@ if __name__ == "__main__":
 
     local_ft2 = os.path.join(workdir, os.path.basename(args.in_ft2))
 
-    print("Copying %s into %s..." % (args.src_dir, local_ft2))
+    print("Copying %s into %s..." % (args.in_ft2, local_ft2))
 
     shutil.copy(args.in_ft2, local_ft2)
 
