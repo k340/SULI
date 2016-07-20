@@ -42,7 +42,7 @@ if __name__ == "__main__":
         # get the contents of file
         active_file_detections = np.recfromtxt(args.directory + '/' + files[i], names=True, usemask=False)
 
-        # if it is not empty, add t o list of notable files
+        # if it is not empty, add to list of notable files
         if len(active_file_detections) >= args.threshold:
 
             interesting_files.append(files[i])
@@ -51,7 +51,10 @@ if __name__ == "__main__":
             if args.out_file != 'none':
 
                 # create out_file
-                pass
+                with open(args.out_file + '.txt', 'w+') as f:
+
+                    # write column headers
+                    f.write("%s\n" % (files[i]))
 
         # display file contents regardless, if specified
         if args.display is True:
