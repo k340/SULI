@@ -72,7 +72,7 @@ if __name__ == "__main__":
 
             out_name = str(file_start) + '.txt'
 
-            print 'Preparing Bayesian blocks analysis on fits pair %s of %s...\n' % (i, str(len(ft1_files)))
+            print 'Preparing Bayesian blocks analysis on fits pair %s of %s...\n' % (i + 1, str(len(ft1_files)))
 
             cmd_line = 'search_for_transients.py --inp_fts %s,%s --irf %s --probability %s --min_dist %s ' \
                        '--out_file %s' % (args.directory + '/' + ft1_files[i], args.directory + '/' + ft2_files[i],
