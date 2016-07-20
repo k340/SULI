@@ -37,7 +37,6 @@ if __name__ == "__main__":
     parser.add_argument("--interval", help="Length of time interval covered by output files (default 24 hours)",
                         type=float, default=86400.0)
 
-
     # parse the arguments
     args = parser.parse_args()
 
@@ -47,6 +46,31 @@ if __name__ == "__main__":
         this_ft1_start = args.tstart + i * args.interval
 
         this_ft1_stop = args.tstart + (i + 1) * args.interval
+
+        this_ft2_start = this_ft1_start - args.buffer
+
+        this_ft2_stop = this_ft1_stop + args.buffer
+
+        # cut ft2
+
+        # prepare cut command
+        out_ft2 = str(this_ft2_start) + '_ft2.fit'
+
+        cmd_line = "ftcopy '%s[SC_DATA][START >= %s && STOP =< %s]' %s copyall=true" \
+                   " clobber=true" % (args.in_ft2, this_ft2_start, this_ft2_stop, out_ft2)
+
+        # execute cut
+        execute_command(cmd_line)
+
+        # Verify that the command executed and update the header
+
+        with fits.open(out_ft2) as fits_file:
+
+            # Check the start and stop in the binary table
+            ft2_starts = fits_file['SC_DATA'].data.field("START")
+            ft2_stops = fits_file['SC_DATA'].data.field("STOP")
+
+            print '\nFt2 begins at %s, ends at %s \n' % (ft2_starts.min(), ft2_stops.max())
 
         print "Intends to make ft1 beginning at %s, ending at %s (%sth file)" % (this_ft1_start, this_ft1_stop, i)
 
@@ -66,7 +90,7 @@ if __name__ == "__main__":
                    "irfs=P8R2_SOURCE_V6 " \
                    "evtype=none maxrows=1000000 " \
                    "seed=%s " \
-                   "chatter=5" % (args.src_dir, args.xml, args.src_dir, args.source, args.in_ft2, str(int(args.tstart)),
+                   "chatter=5" % (args.src_dir, args.xml, args.src_dir, args.source, out_ft2, str(int(args.tstart)),
                                   args.interval, args.tstart, int(args.tstart))
 
         # execute simulation
@@ -79,20 +103,6 @@ if __name__ == "__main__":
 
         os.rename(os.path.join(os.getcwd(), last_ft1), os.path.join(os.getcwd(), out_ft1))
 
-        # Update this_ft1_start and this_ft1_stop to ensure correct tstart, tstop
-        # Probably obsolete
-        with fits.open(out_ft1) as latest_ft1:
-
-            this_ft1_start = max(latest_ft1[0].header['TSTART'],
-                                 latest_ft1['GTI'].data.START.min())
-
-            this_ft1_stop = min(latest_ft1[0].header['TSTOP'],
-                                latest_ft1['GTI'].data.STOP.max())
-
-        this_ft2_start = this_ft1_start - args.buffer
-
-        this_ft2_stop = this_ft1_stop + args.buffer
-
         print "\nFt1 begins at %s, ends at %s (%sth cut)" % (this_ft1_start, this_ft1_stop, i)
 
         # Update the PROC_VER keyword if we are dealing with simulated data
@@ -100,38 +110,20 @@ if __name__ == "__main__":
 
             if int(fits_file[0].header.get("PROC_VER")) < 100:
 
-                # Simulated data
-
                 print("Deadling with simulated data. Updating the PROC_VER keyword to '302'... ")
 
                 fits_file[0].header.set("PROC_VER", "302")
 
-        # cut ft2
-
-        # prepare cut command
-        out_ft2 = str(this_ft2_start) + '_ft2.fit'
-
-        cmd_line = "ftcopy '%s[SC_DATA][START >= %s && STOP =< %s]' %s copyall=true" \
-                   " clobber=true" % (args.in_ft2, this_ft2_start, this_ft2_stop, out_ft2)
-
-        # execute cut
-        execute_command(cmd_line)
-
         # Verify that the command executed and update the header
 
+        # check that ft1 time range is completely inside ft2
         with fits.open(out_ft2) as fits_file:
 
-            # Check the start and stop in the binary table
-            starts = fits_file['SC_DATA'].data.field("START")
-            stops = fits_file['SC_DATA'].data.field("STOP")
-
-            print '\nFt2 begins at %s, ends at %s \n' % (starts.min(), stops.max())
-
-            if starts.min() - this_ft1_start > 0:
+            if ft2_starts.min() - this_ft1_start > 0:
 
                 raise RuntimeError("FT2 file starts after the FT1 file")
 
-            if stops.max() - this_ft1_stop < 0:
+            if ft2_stops.max() - this_ft1_stop < 0:
 
                 raise RuntimeError("FT2 file stops before the end of the FT1 file")
 
@@ -140,10 +132,10 @@ if __name__ == "__main__":
         # Update the header
         with fits.open(out_ft2, mode='update') as out_ft2:
 
-            out_ft2['SC_DATA'].header.set("TSTART", starts.min())
-            out_ft2['SC_DATA'].header.set("TSTOP", stops.max())
+            out_ft2['SC_DATA'].header.set("TSTART", ft2_starts.min())
+            out_ft2['SC_DATA'].header.set("TSTOP", ft2_stops.max())
 
-            out_ft2[0].header.set("TSTART", starts.min())
-            out_ft2[0].header.set("TSTOP", stops.max())
+            out_ft2[0].header.set("TSTART", ft2_starts.min())
+            out_ft2[0].header.set("TSTOP", ft2_stops.max())
 
     print "Finished"
