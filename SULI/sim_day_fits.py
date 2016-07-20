@@ -140,4 +140,4 @@ if __name__ == "__main__":
             out_ft2[0].header.set("TSTART", ft2_starts.min())
             out_ft2[0].header.set("TSTOP", ft2_stops.max())
 
-    print "Finished"
+    print "\nFinished"
