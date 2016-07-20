@@ -18,4 +18,4 @@ def numsuf(n):
 
         th = 'th'
 
-    return 'n%s' % th
+    return str(n) + th
