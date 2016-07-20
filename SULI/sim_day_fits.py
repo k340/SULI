@@ -21,14 +21,22 @@ if __name__ == "__main__":
     # add the arguments needed to the parser
     parser.add_argument("--tstart", help="TSTART for ft1 simulation", required=True, type=float)
     parser.add_argument("--in_ft2", help="Ft2 file containing data to be segmented", required=True, type=str)
+    parser.add_argument("--src_dir", help="Directory containing the input files for the simulation "
+                                          "(XML file, spectra, source names and so on...)", required=True, type=str)
+    parser.add_argument("--xml", help="File containing xml file list (default: xml_files.txt)", type=str,
+                        default='xml_files.txt')
+    parser.add_argument("--source", help="File containing source names (default: source_names.txt)", type=str,
+                        default='source_names.txt')
     parser.add_argument("--buffer", help="Ft2 file is expanded backwards and forwards in time by this amount to ensure"
-                                         "it covers a time interval >= Ft1", required=True, type=float)
+                                         "it covers a time interval >= Ft1 (default: 10000s)", type=float,
+                        default=10000)
     parser.add_argument("--n_days", help="Number of days to be simulated (default: 1)", type=int, default=1)
     parser.add_argument("--evclass", help="Event class to use for cutting the data (default: 128)", type=int,
                         default=128)
     parser.add_argument("--zmax", help="Zenith cut for the events", type=float, default=180)
     parser.add_argument("--interval", help="Length of time interval covered by output files (default 24 hours)",
                         type=float, default=86400.0)
+
 
     # parse the arguments
     args = parser.parse_args()
@@ -42,8 +50,11 @@ if __name__ == "__main__":
 
         print "Intends to make ft1 beginning at %s, ending at %s (%sth file)" % (this_ft1_start, this_ft1_stop, i)
 
-        cmd_line = "gtobssim infile=/home/suli_students/suli_kelin/simulation_input/3FGLSkyPass8R2/xml_files.txt " \
-                   "srclist=/home/suli_students/suli_kelin/simulation_input/3FGLSkyPass8R2/source_names.txt " \
+        # The simulation neeeds an environment variable called SKYMODEL_DIR
+        os.environ['SKYMODEL_DIR'] = args.src_dir
+
+        cmd_line = "gtobssim infile=%s/%s " \
+                   "srclist=%s/%s " \
                    "scfile=%s " \
                    "evroot=%s " \
                    "simtime=%s " \
@@ -55,7 +66,8 @@ if __name__ == "__main__":
                    "irfs=P8R2_SOURCE_V6 " \
                    "evtype=none maxrows=1000000 " \
                    "seed=%s " \
-                   "chatter=5" % (args.in_ft2, int(args.tstart), args.interval, args.tstart, int(args.tstart))
+                   "chatter=5" % (args.src_dir, args.xml, args.src_dir, args.source, args.in_ft2, str(int(args.tstart)),
+                                  args.interval, args.tstart, int(args.tstart))
 
         # execute simulation
         execute_command(cmd_line)

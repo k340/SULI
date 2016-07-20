@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 
-"""Will run get_day_fits, group_search, and flag detections if I decide to actually write it. Should be run from final
+"""Will run sim_day_fits, group_search, and flag detections if I decide to actually write it. Should be run from final
     destination directory"""
 
 # go to 24h_fits
 # create session folder
-# get_day_fits; note ft1 file ends in 00000n where n is month -1
+# sim_day_fits;
 # results go in new* folder called month n
 
 # go to search_test_simulated
