@@ -10,6 +10,7 @@ import argparse
 import os
 from astropy.io import fits
 from SULI.execute_command import execute_command
+from SULI.numsuf import numsuf
 
 # execute only if run from command line
 if __name__ == "__main__":
@@ -59,7 +60,7 @@ if __name__ == "__main__":
         cmd_line = "ftcopy '%s[SC_DATA][START >= %s && STOP =< %s]' %s copyall=true" \
                    " clobber=true" % (args.in_ft2, this_ft2_start, this_ft2_stop, out_ft2)
 
-        print "Preparing ft2 from %s to %s (%s of %s files)" % (this_ft2_start, this_ft2_stop, i + 1, args.n_days)
+        print "\nCreating Ft2 from %s to %s from input (%s of %s Ft2 files)" % (this_ft2_start, this_ft2_stop, i + 1, args.n_days)
 
         # execute cut
         execute_command(cmd_line)
@@ -74,7 +75,8 @@ if __name__ == "__main__":
 
             print '\nFt2 begins at %s, ends at %s \n' % (ft2_starts.min(), ft2_stops.max())
 
-        print "Intends to make ft1 beginning at %s, ending at %s (%sth file)" % (this_ft1_start, this_ft1_stop, i + 1)
+        print "Simulating Ft1 beginning at %s, ending at %s (%s file)" % (this_ft1_start, this_ft1_stop,
+                                                                               numsuf(i + 1))
 
         # The simulation neeeds an environment variable called SKYMODEL_DIR
         os.environ['SKYMODEL_DIR'] = args.src_dir
@@ -99,13 +101,13 @@ if __name__ == "__main__":
         execute_command(cmd_line)
 
         # rename output file
-        last_ft1 = str(int(args.tstart)) + '_events_0000.fits'
+        last_ft1 = str(int(this_ft1_start)) + '_events_0000.fits'
 
-        out_ft1 = str(int(args.tstart)) + '_ft1.fits'
+        out_ft1 = str(int(this_ft1_start)) + '_ft1.fits'
 
         os.rename(os.path.join(os.getcwd(), last_ft1), os.path.join(os.getcwd(), out_ft1))
 
-        print "\nFt1 begins at %s, ends at %s (%sth file)" % (this_ft1_start, this_ft1_stop, i + 1)
+        print "\nFt1 begins at %s, ends at %s (%s file)" % (this_ft1_start, this_ft1_stop, numsuf(i + 1))
 
         # Update the PROC_VER keyword if we are dealing with simulated data
         with fits.open(out_ft1, mode='update') as fits_file:
