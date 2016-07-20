@@ -55,7 +55,7 @@ if __name__ == "__main__":
         # cut ft2
 
         # prepare cut command
-        out_ft2 = str(this_ft2_start) + '_ft2.fit'
+        out_ft2 = 'simulated_' + str(this_ft2_start) + '_ft2.fits'
 
         cmd_line = "ftcopy '%s[SC_DATA][START >= %s && STOP =< %s]' %s copyall=true" \
                    " clobber=true" % (args.in_ft2, this_ft2_start, this_ft2_stop, out_ft2)
@@ -103,7 +103,7 @@ if __name__ == "__main__":
         # rename output file
         last_ft1 = str(int(this_ft1_start)) + '_events_0000.fits'
 
-        out_ft1 = str(int(this_ft1_start)) + '_ft1.fits'
+        out_ft1 = 'simulated_' + str(int(this_ft1_start)) + '_ft1.fits'
 
         os.rename(os.path.join(os.getcwd(), last_ft1), os.path.join(os.getcwd(), out_ft1))
 
