@@ -97,6 +97,10 @@ if __name__ == "__main__":
 
     shutil.copy(args.in_ft2, local_ft2)
 
+    if args.src_dir[-1] == '/':
+
+        args.src_dir = args.src_dir[:-1]
+
     src_dir_basename = os.path.split(args.src_dir)[-1]
 
     local_src_dir = os.path.join(workdir, src_dir_basename)
