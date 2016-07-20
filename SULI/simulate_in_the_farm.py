@@ -89,8 +89,20 @@ if __name__ == "__main__":
     # now you have to go there
     os.chdir(workdir)
 
+    # Copy in the input files
+
+    shutil.copy(args.in_ft2, workdir)
+
+    src_dir_basename = os.path.split(args.src_dir)[-1]
+
+    local_src_dir = os.path.join(workdir, src_dir_basename)
+
+    shutil.copytree(args.src_dir, local_src_dir)
+
+    local_ft2 = os.path.basename(args.in_ft2)
+
     cmd_line = "sim_day_fits.py --tstart %s --in_ft2 %s --src_dir %s --xml %s --source %s --buffer %s " \
-               "--n_days %s --evclass %s --zmax %s --interval %s" % (args.tstart, args.in_ft2, args.src_dir,
+               "--n_days %s --evclass %s --zmax %s --interval %s" % (args.tstart, local_ft2, local_src_dir,
                                                                      args.xml, args.source, args.buffer,
                                                                      args.n_days, args.evclass, args.zmax,
                                                                      args.interval)
