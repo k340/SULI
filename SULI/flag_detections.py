@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""This script scans .txt files (from search_for_transients) in a specified directory and returns a list of files
+"""This script checks .txt files (from search_for_transients) in a specified directory and returns a list of files
     containing detections. It can also display the contents of all files in the terminal and copy them to another
     folder (optional)."""
 
