@@ -23,4 +23,4 @@ if __name__=="__main__":
 
         print(this_cmd_line)
 
-        subprocess.check_call(cmd_line)
+        subprocess.check_call(cmd_line, shell=True)
