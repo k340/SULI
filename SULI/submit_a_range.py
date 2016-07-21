@@ -17,10 +17,10 @@ if __name__=="__main__":
     # add the arguments needed to the parser
     parser.add_argument("--in_ft2", help="Ft2 file containing data to be segmented", required=True, type=str)
 
-    parser.add_argument("--res_dir", help="Directory where to put the results and logs for the simulation",
-                        required=False, type=str, default=os.getcwd())
-
     parser.add_argument("--src_dir", help="Directory containing input data for the simulation",
+                        required=True, type=str)
+
+    parser.add_argument("--res_dir", help="Directory where to put the results and logs for the simulation",
                         required=False, type=str, default=os.getcwd())
 
     parser.add_argument('--test', dest='test_run', action='store_true')
