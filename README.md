@@ -1,2 +1,2 @@
 # SULI
-SULI project
+SULI project to look for transients in LAT data
