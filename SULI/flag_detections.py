@@ -47,26 +47,12 @@ if __name__ == "__main__":
 
             interesting_files.append(files[i])
 
-            # and write to out_file if specified
-            if args.out_file != 'none':
-
-                # create out_file
-                with open(args.out_file + '.txt', 'w+') as f:
-
-                    # write file names
-                    f.write("%s\n" % (files[i]))
-
         # display file contents regardless, if specified
         if args.display is True:
 
             print '%s:' % files[i]
             cmd_line = 'cat %s' % files[i]
             subprocess.check_call(cmd_line, shell=True)
-
-        # test out_file
-        with open(args.out_file + '.txt', 'w+') as f:
-            # write file names
-            f.write("%s\n" % (files[i]))
 
     if len(interesting_files) == 0:
 
@@ -76,9 +62,23 @@ if __name__ == "__main__":
 
         print 'The following files have detections:\n'
 
-        for i in range(len(interesting_files)):
+        with open(args.out_file + '.txt', 'w+') as f:
 
-            active_file_detections = np.recfromtxt(args.directory + '/' + interesting_files[i], names=True,
-                                                   usemask=False)
+            for i in range(len(interesting_files)):
 
-            print '%s (%s detections)' % (interesting_files[i], len(active_file_detections))
+                # get list of detections in interesting_files[i] and print its length
+
+                active_file_detections = np.recfromtxt(args.directory + '/' + interesting_files[i], names=True,
+                                                       usemask=False)
+                print '%s (%s detections)' % (interesting_files[i], len(active_file_detections))
+
+                # and write to out_file if specified
+                if args.out_file != 'none':
+
+                    f.write("%s\n" % (interesting_files[i]))
+
+    # test: flag all files
+    with open(args.out_file + '.txt', 'w+') as f:
+            # and write to out_file if specified
+            if args.out_file != 'none':
+                f.write("%s\n" % (files[i]))
