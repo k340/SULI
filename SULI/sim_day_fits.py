@@ -57,8 +57,8 @@ if __name__ == "__main__":
         # prepare cut command
         out_ft2 = 'simulated_' + str(this_ft2_start) + '_ft2.fits'
 
-        cmd_line = "ftcopy '%s[SC_DATA][START >= %s && STOP =< %s]' %s copyall=true" \
-                   " clobber=true" % (args.in_ft2, this_ft2_start, this_ft2_stop, out_ft2)
+        cmd_line = "fcopy '%s[SC_DATA][START >= %s && STOP =< %s]' '!%s'" % (args.in_ft2, this_ft2_start,
+                                                                             this_ft2_stop, out_ft2)
 
         print "\nCreating Ft2 from %s to %s from input (%s of %s Ft2 files)" % (this_ft2_start, this_ft2_stop, i + 1, args.n_days)
 
