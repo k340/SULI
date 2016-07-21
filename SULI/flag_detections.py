@@ -79,6 +79,7 @@ if __name__ == "__main__":
 
     # test: flag all files
     with open(args.out_file + '.txt', 'w+') as f:
-            # and write to out_file if specified
-            if args.out_file != 'none':
-                f.write("%s\n" % (files[i]))
+
+            for i in range(len(files)):
+                if args.out_file != 'none':
+                    f.write("%s\n" % (files[i]))
