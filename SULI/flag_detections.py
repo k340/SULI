@@ -31,7 +31,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # get list of all .txt files in directory
-    files = [f for f in listdir(args.directory) if (str(join(args.directory, f)).endswith('.txt'))]
+    files = [f for f in listdir(args.directory) if (str(join(args.directory, f)).endswith('_detections.txt'))]
 
     # flag all files with events
     interesting_files = []

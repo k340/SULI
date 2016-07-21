@@ -70,7 +70,7 @@ if __name__ == "__main__":
 
                 file_start = ft1[0].header['TSTART']
 
-            out_name = str(file_start) + '.txt'
+            out_name = str(file_start) + '_detections.txt'
 
             print 'Preparing Bayesian blocks analysis on fits pair %s of %s...\n' % (i + 1, str(len(ft1_files)))
 

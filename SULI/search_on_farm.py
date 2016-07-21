@@ -5,6 +5,7 @@ import os
 import shutil
 import glob
 import subprocess
+from astropy.io import fits
 
 
 def clean_up():
@@ -29,33 +30,27 @@ def clean_up():
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser('Wrapper around the simulation script')
+    parser = argparse.ArgumentParser('Wrapper around the search script')
 
     # Required parameters
 
-    parser.add_argument("--tstart", help="TSTART for ft1 simulation", required=True, type=float)
-    parser.add_argument("--in_ft2", help="Ft2 file containing data to be segmented", required=True, type=str)
-    parser.add_argument("--src_dir", help="Directory containing the input files for the simulation "
-                                          "(XML file, spectra, source names and so on...)", required=True, type=str)
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--date', help='date specifying file to load')
+    group.add_argument('--inp_fts', help='filenames of ft1 and ft2 input, separated by a comma (ex: foo.ft1,bar.ft2)')
 
-    parser.add_argument("--out_dir", help="Directory which will contain the results of the simulation "
-                                          "(ft1 and ft2 file)", required=True, type=str)
+    parser.add_argument("--irf", help="Instrument response function name to be used", type=str, required=True)
+    parser.add_argument("--probability", help="Probability of null hypothesis", type=float, required=True)
+    parser.add_argument("--min_dist", help="Distance above which regions are not considered to overlap", type=float,
+                        required=True)
+    parser.add_argument("--out_file", help="Name of text file containing list of possible transients", type=str,
+                        required=True)
+    parser.add_argument("--loglevel", help="Level of log detail (DEBUG, INFO)", default='info')
+    parser.add_argument("--logfile", help="Name of logfile for the ltfsearch.py script", default='ltfsearch.log')
+    parser.add_argument("--out_dir", help="Directory which will contain the search results txt file)",
+                        required=True, type=str)
 
     # Optional parameters
-
-    parser.add_argument("--xml", help="File containing xml file list (default: xml_files.txt)", type=str,
-                        default='xml_files.txt')
-    parser.add_argument("--source", help="File containing source names (default: source_names.txt)", type=str,
-                        default='source_names.txt')
-    parser.add_argument("--buffer", help="Ft2 file is expanded backwards and forwards in time by this amount to ensure"
-                                         "it covers a time interval >= Ft1 (default: 10000s)", type=float,
-                        default=10000)
-    parser.add_argument("--n_days", help="Number of days to be simulated (default: 1)", type=int, default=1)
-    parser.add_argument("--evclass", help="Event class to use for cutting the data (default: 128)", type=int,
-                        default=128)
-    parser.add_argument("--zmax", help="Zenith cut for the events", type=float, default=180)
-    parser.add_argument("--interval", help="Length of time interval covered by output files (default 24 hours)",
-                        type=float, default=86400.0)
+    # none currently
 
     args = parser.parse_args()
 
@@ -79,45 +74,64 @@ if __name__ == "__main__":
 
     try:
         os.makedirs(workdir)
+
     except:
+
         print("Could not create workdir %s !!!!" % (workdir))
         raise
+
     else:
+
         # This will be executed if no exception is raised
         print("Successfully created %s" % (workdir))
 
     # now you have to go there
     os.chdir(workdir)
 
-    # Copy in the input files
+    # if using simulated data
+    if args.inp_fts:
 
-    local_ft2 = os.path.join(workdir, os.path.basename(args.in_ft2))
+        # Copy in the input files
 
-    print("Copying %s into %s..." % (args.in_ft2, local_ft2))
+        # get names of input files from in_fts
+        ft1_name = os.path.abspath(os.path.expandvars(os.path.expanduser(args.inp_fts.rsplit(",", 1)[0])))
+        ft2_name = os.path.abspath(os.path.expandvars(os.path.expanduser(args.inp_fts.rsplit(",", 1)[1])))
 
-    shutil.copy(args.in_ft2, local_ft2)
+        # create local files
+        local_ft1 = os.path.join(workdir, os.path.basename(ft1_name))
+        local_ft2 = os.path.join(workdir, os.path.basename(ft2_name))
 
-    if args.src_dir[-1] == '/':
+        print("Copying %s into %s..." % (ft1_name, local_ft1))
+        print("Copying %s into %s..." % (ft2_name, local_ft2))
 
-        args.src_dir = args.src_dir[:-1]
+        # copy them to the files
+        shutil.copy(ft1_name, local_ft1)
+        shutil.copy(ft2_name, local_ft2)
 
-    src_dir_basename = os.path.split(args.src_dir)[-1]
+        # run search
 
-    local_src_dir = os.path.join(workdir, src_dir_basename)
+        # use start time of ft1 for outfile name, since ft2 starts early due to buffer
+        with fits.open(os.path.join(workdir, os.path.basename(ft1_name))) as ft1:
 
-    print("Copying %s into %s..." % (args.src_dir, local_src_dir))
+            file_start = ft1[0].header['TSTART']
 
-    shutil.copytree(args.src_dir, local_src_dir)
+        out_name = str(file_start) + '_detections.txt'
 
-    cmd_line = "sim_day_fits.py --tstart %s --in_ft2 %s --src_dir %s --xml %s --source %s --buffer %s " \
-               "--n_days %s --evclass %s --zmax %s --interval %s" % (args.tstart, local_ft2, local_src_dir,
-                                                                     args.xml, args.source, args.buffer,
-                                                                     args.n_days, args.evclass, args.zmax,
-                                                                     args.interval)
+        cmd_line = "search_for_transients.py --inp_fts %s --irf %s --probability %s --min_dist %s --out_file %s" \
+                   " --loglevel %s --logfile %s" % (args.inp_fts, args.irf, args.probability, args.min_dist,
+                                                    out_name, args.loglevel, args.logfile)
+
+    # else using real data
+    else:
+
+        out_name = str(args.date) + '_detections.txt'
+        cmd_line = "search_for_transients.py --date %s --irf %s --probability %s --min_dist %s --out_file %s" \
+                   " --loglevel %s --logfile %s" % (args.date, args.irf, args.probability, args.min_dist,
+                                                    out_name, args.loglevel, args.logfile)
 
     try:
 
-        # Do whathever
+        # Do search
         print("\n\nAbout to execute command:")
         print(cmd_line)
         print('\n')
@@ -138,13 +152,11 @@ if __name__ == "__main__":
     else:
 
         # Stage-out
-        output_files = glob.glob("simulated_*_ft?.fits")
+        output_files = glob.glob("*_detections.txt")
 
-        if len(output_files) != 2:
+        if len(output_files) != 1:
 
             print("\n\nCannot find output files!")
-
-            clean_up()
 
         else:
 
