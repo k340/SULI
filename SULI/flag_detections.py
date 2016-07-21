@@ -53,7 +53,7 @@ if __name__ == "__main__":
                 # create out_file
                 with open(args.out_file + '.txt', 'w+') as f:
 
-                    # write column headers
+                    # write file names
                     f.write("%s\n" % (files[i]))
 
         # display file contents regardless, if specified
@@ -62,6 +62,11 @@ if __name__ == "__main__":
             print '%s:' % files[i]
             cmd_line = 'cat %s' % files[i]
             subprocess.check_call(cmd_line, shell=True)
+
+        # test out_file
+        with open(args.out_file + '.txt', 'w+') as f:
+            # write file names
+            f.write("%s\n" % (files[i]))
 
     if len(interesting_files) == 0:
 
