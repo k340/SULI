@@ -7,7 +7,9 @@ if __name__=="__main__":
 
     tstart = 239557420.0
 
-    cmd_line = "qsub -l vmem=10gb  -V -F '--tstart %s " \
+    cmd_line = "qsub -l vmem=10gb -o /home/suli_students/suli_kelin/simulation/logs/%s.out " \
+               "-e /home/suli_students/suli_kelin/simulation/logs/%s.err -V " \
+               "-F '--tstart %s " \
                "--in_ft2 /home/suli_students/suli_kelin/simulation/ft2_1_year.fits " \
                "--src_dir /home/suli_students/suli_kelin/simulation_input/3FGLSkyPass8R2 " \
                "--out_dir /home/suli_students/suli_kelin/simulation/generated_data' " \
@@ -19,8 +21,8 @@ if __name__=="__main__":
 
     for tstart in tstarts:
 
-        this_cmd_line = cmd_line % tstart
+        this_cmd_line = cmd_line % (tstart, tstart, tstart)
 
         print(this_cmd_line)
 
-        subprocess.check_call(cmd_line, shell=True)
+        # subprocess.check_call(this_cmd_line, shell=True)
