@@ -7,6 +7,7 @@ import os
 from SULI import which
 from SULI.execute_command import execute_command
 from SULI.work_within_directory import work_within_directory
+from astropy.io import fits
 
 if __name__ == "__main__":
 
@@ -71,12 +72,24 @@ if __name__ == "__main__":
             # get list of ft1 files
             ft1_files = [f for f in os.listdir(src_dir) if (str(os.path.join(src_dir, f)).endswith(('ft1.fits',
                                                                                                     'ft1.fit')))]
-            ft1_files.sort()
+            # (is basically glob, should be changed to glob at some point)
 
             # get list of ft2 files
             ft2_files = [f for f in os.listdir(src_dir) if (str(os.path.join(src_dir, f)).endswith(('ft2.fits',
                                                                                                     'ft2.fit')))]
-            ft2_files.sort()
+
+            # sort them
+            def ft_sort(in_list):
+
+                out_list = in_list.split("_")[0]
+
+                return float(out_list)
+
+            ft1_files = sorted(ft1_files, key=ft_sort)
+            ft2_files = sorted(ft2_files, key=ft_sort)
+
+            print '\nFound %s ft1 files\n' % len(ft1_files)
+            print '\nFound %s ft2 files\n' % len(ft2_files)
 
             # make sure each ft1/ft2 is part of a pair
             if len(ft1_files) != len(ft2_files):
@@ -94,8 +107,31 @@ if __name__ == "__main__":
 
                 raise RuntimeError('There are more %s than %s' % (x, y))
 
-            print '\nFound ' + str(len(ft1_files)) + ' fits pairs\n'
+            # make sure pairs match
+            for i in range(len(ft1_files)):
 
+                with fits.open(ft1_files[i]) as fits_file:
+
+                    # Check the start and stop in the binary table
+                    ft1_times = fits_file['EVENTS'].data.field("TIME")
+                    ft1_starts = fits_file['GTI'].data.field("START")
+                    ft1_stops = fits_file['GTI'].data.field("STOP")
+
+                with fits.open(ft2_files[i]) as fits_file:
+
+                    # Check the start and stop in the binary table
+                    ft2_starts = fits_file['SC_DATA'].data.field("START")
+                    ft2_stops = fits_file['SC_DATA'].data.field("STOP")
+
+                if ft2_starts.min() - min(ft1_starts.min(), ft1_times.min()) > 0:
+
+                    raise RuntimeError("Mismatch in ft pair %s (FT2 file starts after the start of the FT1 file)" % i)
+
+                if ft2_stops.max() - max(ft1_stops.max(), ft1_stops.max()) < 0:
+
+                    raise RuntimeError("Mismatch in ft pair %s (FT2 file stops before the end of the FT1 file)" % i)
+
+            # generate command line
             def sim_cmd_line(ft1, ft2, jobid):
 
                 this_cmd_line = "qsub -l vmem=10gb -o %s/%s.out -e %s/%s.err -V -F '--inp_fts %s,%s --irf %s " \
