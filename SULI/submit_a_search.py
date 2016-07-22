@@ -133,7 +133,7 @@ if __name__ == "__main__":
             # generate command line
             def sim_cmd_line(ft1, ft2, jobid):
 
-                this_cmd_line = "qsub -l vmem=10gb -o %s/%s.out -e %s/%s.err -V -F '--inp_fts %s,%s --irf %s " \
+                this_cmd_line = "qsub -l vmem=30gb -o %s/%s.out -e %s/%s.err -V -F '--inp_fts %s,%s --irf %s " \
                                 "--probability %s --min_dist %s --out_dir %s' %s" % (log_path, jobid, log_path,
                                                                                      jobid, ft1, ft2, args.irf,
                                                                                      args.probability, args.min_dist,
