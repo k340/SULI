@@ -88,8 +88,7 @@ if __name__ == "__main__":
             ft1_files = sorted(ft1_files, key=ft_sort)
             ft2_files = sorted(ft2_files, key=ft_sort)
 
-            print '\nFound %s ft1 files\n' % len(ft1_files)
-            print '\nFound %s ft2 files\n' % len(ft2_files)
+            print '\nFound %s ft1 files\nFound %s ft2 files\n' % (len(ft1_files), len(ft2_files))
 
             # make sure each ft1/ft2 is part of a pair
             if len(ft1_files) != len(ft2_files):
@@ -110,14 +109,14 @@ if __name__ == "__main__":
             # make sure pairs match
             for i in range(len(ft1_files)):
 
-                with fits.open(ft1_files[i]) as fits_file:
+                with fits.open(os.path.join(src_dir, ft1_files[i])) as fits_file:
 
                     # Check the start and stop in the binary table
                     ft1_times = fits_file['EVENTS'].data.field("TIME")
                     ft1_starts = fits_file['GTI'].data.field("START")
                     ft1_stops = fits_file['GTI'].data.field("STOP")
 
-                with fits.open(ft2_files[i]) as fits_file:
+                with fits.open(os.path.join(src_dir, ft2_files[i])) as fits_file:
 
                     # Check the start and stop in the binary table
                     ft2_starts = fits_file['SC_DATA'].data.field("START")
