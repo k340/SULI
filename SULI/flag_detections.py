@@ -43,7 +43,7 @@ if __name__ == "__main__":
         active_file_detections = np.recfromtxt(args.directory + '/' + files[i], names=True, usemask=False)
 
         # if it is not empty, add to list of notable files
-        if len(active_file_detections) >= args.threshold:
+        if active_file_detections.size >= args.threshold:
 
             interesting_files.append(files[i])
 
@@ -70,7 +70,7 @@ if __name__ == "__main__":
 
                 active_file_detections = np.recfromtxt(args.directory + '/' + interesting_files[i], names=True,
                                                        usemask=False)
-                print '%s (%s detections)' % (interesting_files[i], len(active_file_detections))
+                print '%s (%s detections)' % (interesting_files[i], active_file_detections.size)
 
                 # and write to out_file if specified
                 if args.out_file != 'none':
