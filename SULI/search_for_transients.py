@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-"""This is a global script that takes actual or simulated Fermi data and searches it for transients
-    actual data is specified by a date, simulated is given by a specific ft1 or ft2 file"""
+"""This is a global script that takes actual or simulated Fermi data and searches it for transients.
+    Actual data is specified by a date, simulated is given by a specific ft1 and ft2 file"""
 
 import argparse
 from astropy.io import fits
