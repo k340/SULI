@@ -42,15 +42,8 @@ if __name__ == "__main__":
     parser.add_argument("--probability", help="Probability of null hypothesis", type=float, required=True)
     parser.add_argument("--min_dist", help="Distance above which regions are not considered to overlap", type=float,
                         required=True)
-    parser.add_argument("--out_file", help="Name of text file containing list of possible transients", type=str,
-                        required=True)
-    parser.add_argument("--loglevel", help="Level of log detail (DEBUG, INFO)", default='info')
-    parser.add_argument("--logfile", help="Name of logfile for the ltfsearch.py script", default='ltfsearch.log')
     parser.add_argument("--out_dir", help="Directory which will contain the search results txt file)",
                         required=True, type=str)
-
-    # Optional parameters
-    # none currently
 
     args = parser.parse_args()
 
@@ -66,10 +59,7 @@ if __name__ == "__main__":
     # This is your unique job ID (a number like 546127)
     unique_id = os.environ.get("PBS_JOBID").split(".")[0]
 
-    # os.path.join joins two path in a system-independent way
     workdir = os.path.join('/dev/shm', unique_id)
-
-    # Now create the workdir
     print("About to create %s..." % (workdir))
 
     try:
@@ -117,17 +107,16 @@ if __name__ == "__main__":
 
         out_name = str(file_start) + '_detections.txt'
 
-        cmd_line = "search_for_transients.py --inp_fts %s --irf %s --probability %s --min_dist %s --out_file %s" \
-                   " --loglevel %s --logfile %s" % (args.inp_fts, args.irf, args.probability, args.min_dist,
-                                                    out_name, args.loglevel, args.logfile)
+        cmd_line = "search_for_transients.py --inp_fts %s --irf %s --probability %s --min_dist %s " \
+                   "--out_file %s" % (args.inp_fts, args.irf, args.probability, args.min_dist, out_name)
 
     # else using real data
     else:
 
         out_name = str(args.date) + '_detections.txt'
-        cmd_line = "search_for_transients.py --date %s --irf %s --probability %s --min_dist %s --out_file %s" \
-                   " --loglevel %s --logfile %s" % (args.date, args.irf, args.probability, args.min_dist,
-                                                    out_name, args.loglevel, args.logfile)
+
+        cmd_line = "search_for_transients.py --date %s --irf %s --probability %s --min_dist %s " \
+                   "--out_file %s" % (args.date, args.irf, args.probability, args.min_dist, out_name)
 
     try:
 

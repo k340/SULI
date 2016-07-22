@@ -28,6 +28,8 @@ if __name__ == "__main__":
                         required=True)
     parser.add_argument("--out_file", help="Name of text file containing list of possible transients", type=str,
                         required=True)
+
+    # optional
     parser.add_argument("--loglevel", help="Level of log detail (DEBUG, INFO)", default='info')
     parser.add_argument("--logfile", help="Name of logfile for the ltfsearch.py script", default='ltfsearch.log')
     parser.add_argument("--workdir", help="Path of work directory", default=os.getcwd())

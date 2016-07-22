@@ -1,32 +1,27 @@
 #!/usr/bin/env python
 
 import numpy as np
-import subprocess
 import argparse
 import os
-import astropy.io.fits as pyfits
 
 from SULI import which
+from SULI.execute_command import execute_command
 from SULI.work_within_directory import work_within_directory
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(
-        'Submit transient search to the farm at Stanford')
+    parser = argparse.ArgumentParser('Submit transient search to the farm at Stanford')
 
     # add the arguments needed to the parser
-    parser.add_argument("--src_dir", help="Directory containing input data to be searched",
-                        required=True, type=str)
-    parser.add_argument("--irf", help="Instrument response function name to be used", type=str,
-                        required=True)
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--date', help='date specifying file to load')
+    group.add_argument("--src_dir", help="Directory containing input data to be searched", type=str)
+
+    parser.add_argument("--irf", help="Instrument response function name to be used", type=str, required=True)
     parser.add_argument("--probability", help="Probability of null hypothesis", type=float, required=True)
     parser.add_argument("--min_dist", help="Distance above which regions are not considered to overlap", type=float,
                         required=True)
 
-    # optional
-    parser.add_argument("--loglevel", help="Level of log detail (DEBUG, INFO)", default='info')
-    parser.add_argument("--logfile", help="Name of logfile for the ltfsearch.py script", default='ltfsearch.log')
-    parser.add_argument("--workdir", help="Path of work directory", default=os.getcwd())
     parser.add_argument("--res_dir", help="Directory where to put the results and logs for the simulation",
                         required=False, type=str, default=os.getcwd())
 
@@ -36,67 +31,112 @@ if __name__ == "__main__":
     # parse the arguments
     args = parser.parse_args()
 
-    # Check that the output directory exists
-
+    # get output directory from parser
     res_dir = os.path.abspath(os.path.expandvars(os.path.expanduser(args.res_dir)))
 
+    # Check that the output directory exists
     if not os.path.exists(res_dir):
-        raise RuntimeError("Directory %s does not exists" % res_dir)
 
-    # Check that the simulation directory exists
+        raise RuntimeError("Directory %s does not exist" % res_dir)
 
+    # get src directory from parser
     src_dir = os.path.abspath(os.path.expandvars(os.path.expanduser(args.src_dir)))
 
+    # Check that the simulation directory exists
     if not os.path.exists(src_dir):
-        raise RuntimeError("Directory %s does not exists" % src_dir)
+
+        raise RuntimeError("Directory %s does not exist" % src_dir)
 
     # Go to output directory
-
     with work_within_directory(res_dir):
 
-        # Create logs directory if does not exists
+        # Create logs directory if it does not exist
         if not os.path.exists('logs'):
+
             os.mkdir('logs')
 
-        # Create generated_data directory, if does not exist
+        # Create generated_data directory if it does not exist
         if not os.path.exists('generated_data'):
+
             os.mkdir('generated_data')
 
-        # Read in the FT2 file
-
-        ft2_path = os.path.abspath(os.path.expandvars(os.path.expanduser(args.in_ft2)))
-
-        data = pyfits.getdata(ft2_path, "SC_DATA")
-
-        ft2_tstart = data.START.min()
-
-        # Generate the command line
-
+        # Generate universal command line parameters
         log_path = os.path.abspath('logs')
         out_path = os.path.abspath('generated_data')
+        exe_path = which.which('search_on_farm.py')
 
-        # Find executable
-        exe_path = which.which('simulate_in_the_farm.py')
+        # if using simulated data:
+        if args.src_dir:
 
+            # get list of ft1 files
+            ft1_files = [f for f in os.listdir(src_dir) if (str(os.path.join(src_dir, f)).endswith(('ft1.fits',
+                                                                                                    'ft1.fit')))]
+            ft1_files.sort()
 
-        def get_cmd_line(this_tstart):
+            # get list of ft2 files
+            ft2_files = [f for f in os.listdir(src_dir) if (str(os.path.join(src_dir, f)).endswith(('ft2.fits',
+                                                                                                    'ft2.fit')))]
+            ft2_files.sort()
 
-            cmd_line = "qsub -l vmem=10gb -o %s/%s.out -e %s/%s.err -V -F '--tstart %s --in_ft2 %s " \
-                       "--src_dir %s --out_dir %s' %s" % (log_path, this_tstart, log_path, this_tstart,
-                                                          this_tstart, ft2_path, src_dir, out_path, exe_path)
+            # make sure each ft1/ft2 is part of a pair
+            if len(ft1_files) != len(ft2_files):
 
-            return cmd_line
+                # determine which type there is more of for error msg
+                if len(ft1_files) > len(ft2_files):
 
+                    x = 'ft1 files'
+                    y = 'ft2 files'
 
-        # A year
+                else:
 
-        tstarts = np.arange(ft2_tstart, ft2_tstart + (365.0 * 86400.0), 86400.0)
+                    x = 'ft2 files'
+                    y = 'ft1 files'
 
-        for this_tstart in tstarts:
+                raise RuntimeError('There are more %s than %s' % (x, y))
 
-            this_cmd_line = get_cmd_line(this_tstart)
+            print '\nFound ' + str(len(ft1_files)) + ' fits pairs\n'
 
-            print(this_cmd_line)
+            def sim_cmd_line(ft1, ft2, jobid):
 
-            if not args.test_run:
-                subprocess.check_call(this_cmd_line, shell=True)
+                this_cmd_line = "qsub -l vmem=10gb -o %s/%s.out -e %s/%s.err -V -F '--inp_fts %s,%s --irf %s " \
+                                "--probability %s --min_dist %s --out_dir %s' %s" % (log_path, jobid, log_path,
+                                                                                     jobid, ft1, ft2, args.irf,
+                                                                                     args.probability, args.min_dist,
+                                                                                     out_path, exe_path)
+                return this_cmd_line
+
+            # iterate over input directory, calling search on each pair of fits
+            for i in range(len(ft1_files)):
+
+                this_ft1 = src_dir + '/' + ft1_files[i]
+                this_ft2 = src_dir + '/' + ft2_files[i]
+                this_id = ft1_files[i]
+
+                cmd_line = sim_cmd_line(this_ft1, this_ft2, this_id)
+
+                if not args.test_run:
+
+                    execute_command(cmd_line)
+
+        else:
+
+            def rl_cmd_line(start):
+
+                this_cmd_line = "qsub -l vmem=10gb -o %s/%s.out -e %s/%s.err -V -F '--date %s --irf %s " \
+                                "--probability %s --min_dist %s --out_dir %s' %s" % (log_path, start, log_path,
+                                                                                     start, start, args.irf,
+                                                                                     args.probability, args.min_dist,
+                                                                                     out_path, exe_path)
+                return this_cmd_line
+
+            # A year of Fermi data
+
+            dates = np.arange(args.date, args.date + (365.0 * 86400.0), 86400.0)
+
+            for this_tstart in dates:
+
+                cmd_line = rl_cmd_line(this_tstart)
+
+                if not args.test_run:
+
+                    execute_command(cmd_line)

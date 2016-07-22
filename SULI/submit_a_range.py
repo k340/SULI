@@ -9,7 +9,7 @@ import astropy.io.fits as pyfits
 from SULI import which
 from SULI.work_within_directory import work_within_directory
 
-if __name__=="__main__":
+if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
         'Submit simulation to the farm at Stanford')
@@ -59,7 +59,6 @@ if __name__=="__main__":
 
             os.mkdir('generated_data')
 
-
         # Read in the FT2 file
 
         ft2_path = os.path.abspath(os.path.expandvars(os.path.expanduser(args.in_ft2)))
@@ -76,11 +75,11 @@ if __name__=="__main__":
         # Find executable
         exe_path = which.which('simulate_in_the_farm.py')
 
-        def get_cmd_line(this_tstart):
+        def get_cmd_line(sub_tstart):
 
             cmd_line = "qsub -l vmem=10gb -o %s/%s.out -e %s/%s.err -V -F '--tstart %s --in_ft2 %s " \
-                       "--src_dir %s --out_dir %s' %s" %(log_path, this_tstart, log_path, this_tstart,
-                                                         this_tstart, ft2_path, src_dir, out_path, exe_path)
+                       "--src_dir %s --out_dir %s' %s" % (log_path, sub_tstart, log_path, sub_tstart,
+                                                          sub_tstart, ft2_path, src_dir, out_path, exe_path)
 
             return cmd_line
 
