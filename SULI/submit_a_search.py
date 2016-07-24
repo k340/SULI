@@ -23,8 +23,9 @@ if __name__ == "__main__":
     parser.add_argument("--min_dist", help="Distance above which regions are not considered to overlap", type=float,
                         required=True)
 
-    parser.add_argument("--res_dir", help="Directory where to put the results and logs for the simulation",
+    parser.add_argument("--res_dir", help="Directory where to put the results and logs for the search",
                         required=False, type=str, default=os.getcwd())
+    parser.add_argument("--job_size", help="Number of jobs to submit at a time", required=False, type=int, default=20)
 
     parser.add_argument('--test', dest='test_run', action='store_true')
     parser.set_defaults(test_run=False)
@@ -81,7 +82,7 @@ if __name__ == "__main__":
             # sort them
             def ft_sort(in_list):
 
-                out_list = in_list.split("_")[0]
+                out_list = in_list.split("_")[1]
 
                 return float(out_list)
 
