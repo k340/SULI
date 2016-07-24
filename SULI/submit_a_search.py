@@ -150,6 +150,14 @@ if __name__ == "__main__":
 
                 cmd_line = sim_cmd_line(this_ft1, this_ft2, this_id)
 
+                # dont spam the farm; if more than [jobsize] jobs have been submitted
+                if (i + 1) % args.job_size == 0:
+
+                    # wait until they finish to submit more
+
+                    # check res_dir every 120s for new results
+                    pass
+
                 if not args.test_run:
 
                     execute_command(cmd_line)
