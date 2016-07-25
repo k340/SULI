@@ -179,7 +179,8 @@ if __name__ == "__main__":
                         # update num_fin for any finished jobs
                         num_fin = len([results for results in os.listdir(DIR) if os.path.isfile(os.path.join(DIR,
                                                                                                              results))])
-                        print "%s ouf of %s jobs in this pass finished." % (num_fin - num_res_files, args.job_size)
+                        print "%s ouf of %s jobs in this pass finished." % ((num_fin - num_res_files) % i,
+                                                                            args.job_size)
 
         else:
 
