@@ -159,10 +159,9 @@ if __name__ == "__main__":
 
                     execute_command(cmd_line)
 
-                # dont spam the farm; if more than [jobsize] jobs have been submitted
+                # don't spam the farm; if more than [jobsize] jobs have been submitted,
+                # wait until they finish to submit more
                 if (i + 1) % args.job_size == 0:
-
-                    # wait until they finish to submit more
 
                     # check res_dir every 10s for new results
 
