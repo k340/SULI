@@ -3,6 +3,7 @@
 import numpy as np
 import argparse
 import os
+import time
 
 from SULI import which
 from SULI.execute_command import execute_command
@@ -57,10 +58,13 @@ if __name__ == "__main__":
 
             os.mkdir('logs')
 
-        # Create generated_data directory if it does not exist
+        # Create generated_data directory if it does not exist, and get number of files in the directory
         if not os.path.exists('generated_data'):
 
             os.mkdir('generated_data')
+
+        DIR = './generated_data'
+        num_res_files = len([results for results in os.listdir(DIR) if os.path.isfile(os.path.join(DIR, results))])
 
         # Generate universal command line parameters
         log_path = os.path.abspath('logs')
@@ -150,17 +154,32 @@ if __name__ == "__main__":
 
                 cmd_line = sim_cmd_line(this_ft1, this_ft2, this_id)
 
+                if not args.test_run:
+
+                    # execute_command(cmd_line)
+                    print "Submitting job"
+
                 # dont spam the farm; if more than [jobsize] jobs have been submitted
                 if (i + 1) % args.job_size == 0:
 
                     # wait until they finish to submit more
 
-                    # check res_dir every 120s for new results
-                    pass
+                    # check res_dir every 10s for new results
 
-                if not args.test_run:
+                    # number of files in generated data
+                    num_fin = len([results for results in os.listdir(DIR) if os.path.isfile(os.path.join(DIR,
+                                                                                                         results))])
+                    # while the current number of results is not i+1 more than the initial number
+                    # i.e., while the number of new files hasn't caught up to i + 1
+                    while num_fin - num_res_files != i + 1:
 
-                    execute_command(cmd_line)
+                        # sleep for 10s
+                        time.sleep(10)
+
+                        # update num_fin for any finished jobs
+                        num_fin = len([results for results in os.listdir(DIR) if os.path.isfile(os.path.join(DIR,
+                                                                                                             results))])
+                        print "%s ouf of %s jobs in this pass finished." % (num_fin - num_res_files, args.job_size)
 
         else:
 
