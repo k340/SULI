@@ -4,6 +4,7 @@ import numpy as np
 import argparse
 import os
 import time
+import sys
 
 from SULI import which
 from SULI.execute_command import execute_command
@@ -121,11 +122,15 @@ if __name__ == "__main__":
                     ft1_starts = fits_file['GTI'].data.field("START")
                     ft1_stops = fits_file['GTI'].data.field("STOP")
 
+                    print "got ft1 times"
+
                 with fits.open(os.path.join(src_dir, ft2_files[i])) as fits_file:
 
                     # Check the start and stop in the binary table
                     ft2_starts = fits_file['SC_DATA'].data.field("START")
                     ft2_stops = fits_file['SC_DATA'].data.field("STOP")
+
+                    print "got ft2 times"
 
                 if ft2_starts.min() - min(ft1_starts.min(), ft1_times.min()) > 0:
 
@@ -156,8 +161,8 @@ if __name__ == "__main__":
 
                 if not args.test_run:
 
+                    print "submitting job"
                     # execute_command(cmd_line)
-                    print "Submitting job"
 
                 # dont spam the farm; if more than [jobsize] jobs have been submitted
                 if (i + 1) % args.job_size == 0:
@@ -171,15 +176,40 @@ if __name__ == "__main__":
                                                                                                          results))])
                     # while the current number of results is not i+1 more than the initial number
                     # i.e., while the number of new files hasn't caught up to i + 1
+                    sleep_count = 0
                     while num_fin - num_res_files != i + 1:
 
                         # sleep for 10s
                         time.sleep(10)
+                        sleep_count += 1
 
                         # update num_fin for any finished jobs
                         num_fin = len([results for results in os.listdir(DIR) if os.path.isfile(os.path.join(DIR,
                                                                                                              results))])
                         print "%s ouf of %s jobs in this pass finished." % (num_fin - num_res_files, args.job_size)
+
+                        # if it is taking to long, prompt to continue
+                        if sleep_count >= 60:
+
+                            def continue_prompt(inp_string):
+
+                                sys.stdout.write(inp_string)
+                                sys.stdout.write("Job is taking longer than usual. Abort? [y/n]")
+                                inp = raw_input().lower()
+
+                                if inp == 'y':
+
+                                    raise RuntimeError("Farm took too long to respond. Aborting search.")
+
+                                elif inp =='n':
+
+                                    return 0
+
+                                else:
+
+                                    continue_prompt('Invalid prompt\n')
+
+                            continue_prompt('\n')
 
         else:
 
