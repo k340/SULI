@@ -165,11 +165,10 @@ if __name__ == "__main__":
 
                     # check res_dir every 10s for new results
 
-                    # number of files in generated data
-                    num_fin = len([results for results in os.listdir(DIR) if os.path.isfile(os.path.join(DIR,
-                                                                                                         results))])
                     # while the current number of results is not i+1 more than the initial number
                     # i.e., while the number of new files hasn't caught up to i + 1
+                    num_fin = len([results for results in os.listdir(DIR) if os.path.isfile(os.path.join(DIR,
+                                                                                                         results))])
                     sleep_count = 0
                     while num_fin - num_res_files != i + 1:
 
