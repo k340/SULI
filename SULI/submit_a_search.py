@@ -157,6 +157,7 @@ if __name__ == "__main__":
 
                 if not args.test_run:
 
+                    print "Day %s" % i
                     execute_command(cmd_line)
 
                 # don't spam the farm; if more than [jobsize] jobs have been submitted,
