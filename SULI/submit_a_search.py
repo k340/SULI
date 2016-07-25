@@ -122,15 +122,11 @@ if __name__ == "__main__":
                     ft1_starts = fits_file['GTI'].data.field("START")
                     ft1_stops = fits_file['GTI'].data.field("STOP")
 
-                    print "got ft1 times"
-
                 with fits.open(os.path.join(src_dir, ft2_files[i])) as fits_file:
 
                     # Check the start and stop in the binary table
                     ft2_starts = fits_file['SC_DATA'].data.field("START")
                     ft2_stops = fits_file['SC_DATA'].data.field("STOP")
-
-                    print "got ft2 times"
 
                 if ft2_starts.min() - min(ft1_starts.min(), ft1_times.min()) > 0:
 
@@ -161,8 +157,7 @@ if __name__ == "__main__":
 
                 if not args.test_run:
 
-                    print "submitting job"
-                    # execute_command(cmd_line)
+                    execute_command(cmd_line)
 
                 # dont spam the farm; if more than [jobsize] jobs have been submitted
                 if (i + 1) % args.job_size == 0:
@@ -209,7 +204,7 @@ if __name__ == "__main__":
 
                                     continue_prompt('Invalid prompt\n')
 
-                            continue_prompt('\n')
+                            sleep_count = continue_prompt('\n')
 
         else:
 
