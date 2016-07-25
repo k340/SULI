@@ -173,36 +173,12 @@ if __name__ == "__main__":
                     while num_fin - num_res_files != i + 1:
 
                         # sleep for 10s
-                        time.sleep(10)
-                        sleep_count += 1
+                        time.sleep(60)
 
                         # update num_fin for any finished jobs
                         num_fin = len([results for results in os.listdir(DIR) if os.path.isfile(os.path.join(DIR,
                                                                                                              results))])
                         print "%s ouf of %s jobs in this pass finished." % (num_fin - num_res_files, args.job_size)
-
-                        # if it is taking to long, prompt to continue
-                        if sleep_count >= 60:
-
-                            def continue_prompt(inp_string):
-
-                                sys.stdout.write(inp_string)
-                                sys.stdout.write("Job is taking longer than usual. Abort? [y/n]")
-                                inp = raw_input().lower()
-
-                                if inp == 'y':
-
-                                    raise RuntimeError("Farm took too long to respond. Aborting search.")
-
-                                elif inp =='n':
-
-                                    return 0
-
-                                else:
-
-                                    continue_prompt('Invalid prompt\n')
-
-                            sleep_count = continue_prompt('\n')
 
         else:
 
