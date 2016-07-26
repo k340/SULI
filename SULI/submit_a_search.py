@@ -156,7 +156,7 @@ if __name__ == "__main__":
                 cmd_line = sim_cmd_line(this_ft1, this_ft2, this_id)
                 if not args.test_run:
 
-                    print "Day %s\n" % (i + 1)
+                    print "\nDay %s:" % (i + 1)
                     execute_command(cmd_line)
 
                 # don't spam the farm; if more than [jobsize] jobs have been submitted,
