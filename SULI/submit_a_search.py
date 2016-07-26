@@ -4,7 +4,6 @@ import numpy as np
 import argparse
 import os
 import time
-import sys
 
 from SULI import which
 from SULI.execute_command import execute_command
@@ -148,7 +147,7 @@ if __name__ == "__main__":
                 return this_cmd_line
 
             # iterate over input directory, calling search on each pair of fits
-            for i in range(len(args.last_job, ft1_files)):
+            for i in range(args.last_job, len(ft1_files)):
 
                 this_ft1 = src_dir + '/' + ft1_files[i]
                 this_ft2 = src_dir + '/' + ft2_files[i]
