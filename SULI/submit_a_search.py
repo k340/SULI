@@ -28,7 +28,8 @@ if __name__ == "__main__":
     parser.add_argument("--res_dir", help="Directory where to put the results and logs for the search",
                         required=False, type=str, default=os.getcwd())
     parser.add_argument("--job_size", help="Number of jobs to submit at a time", required=False, type=int, default=20)
-
+    parser.add_argument("--last_job", help="Integer specifying the last job submitted in this folder", required=False,
+                        type=int, default=0)
     parser.add_argument('--test', dest='test_run', action='store_true')
     parser.set_defaults(test_run=False)
 
@@ -147,7 +148,7 @@ if __name__ == "__main__":
                 return this_cmd_line
 
             # iterate over input directory, calling search on each pair of fits
-            for i in range(len(ft1_files)):
+            for i in range(len(args.last_job, ft1_files)):
 
                 this_ft1 = src_dir + '/' + ft1_files[i]
                 this_ft2 = src_dir + '/' + ft2_files[i]
