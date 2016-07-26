@@ -173,8 +173,8 @@ if __name__ == "__main__":
                     sleep_count = 0
                     while num_fin - num_res_files != i + 1:
 
-                        # sleep for 10s
-                        time.sleep(60)
+                        # sleep for 30s
+                        time.sleep(30)
 
                         # update num_fin for any finished jobs
                         num_fin = len([results for results in os.listdir(DIR) if os.path.isfile(os.path.join(DIR,
