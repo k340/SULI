@@ -88,7 +88,6 @@ if __name__ == "__main__":
             def ft_sort(in_list):
 
                 out_list = in_list.split("_")[1]
-
                 return float(out_list)
 
             ft1_files = sorted(ft1_files, key=ft_sort)
@@ -152,6 +151,9 @@ if __name__ == "__main__":
                 this_ft1 = src_dir + '/' + ft1_files[i]
                 this_ft2 = src_dir + '/' + ft2_files[i]
                 this_id = ft1_files[i]
+
+                print i
+                print this_id
 
                 cmd_line = sim_cmd_line(this_ft1, this_ft2, this_id)
 
