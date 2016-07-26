@@ -180,6 +180,7 @@ if __name__ == "__main__":
                                                                                                              results))])
                         print "%s ouf of %s jobs in this pass finished." % ((num_fin - num_res_files) % i,
                                                                             args.job_size)
+                        print "%s results in gen data (%s at start)" % (num_fin, num_res_files)
 
         else:
 
