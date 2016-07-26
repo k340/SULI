@@ -88,6 +88,7 @@ if __name__ == "__main__":
             def ft_sort(in_list):
 
                 out_list = in_list.split("_")[1]
+
                 return float(out_list)
 
             ft1_files = sorted(ft1_files, key=ft_sort)
@@ -152,14 +153,10 @@ if __name__ == "__main__":
                 this_ft2 = src_dir + '/' + ft2_files[i]
                 this_id = ft1_files[i]
 
-                print i
-                print this_id
-
                 cmd_line = sim_cmd_line(this_ft1, this_ft2, this_id)
-
                 if not args.test_run:
 
-                    print "Day %s" % (i + 1)
+                    print "Day %s\n" % (i + 1)
                     execute_command(cmd_line)
 
                 # don't spam the farm; if more than [jobsize] jobs have been submitted,
