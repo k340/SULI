@@ -170,7 +170,7 @@ if __name__ == "__main__":
                     num_fin = len([results for results in os.listdir(DIR) if os.path.isfile(os.path.join(DIR,
                                                                                                          results))])
                     sleep_count = 0
-                    while num_fin - num_res_files != i + 1:
+                    while num_fin - num_res_files != i + 1 - args.last_job:
 
                         # sleep for 30s
                         time.sleep(30)
