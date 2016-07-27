@@ -182,8 +182,14 @@ if __name__ == "__main__":
                                                                                                              results))])
                         print "%s ouf of %s jobs in this pass finished." % ((num_fin - num_res_files) % i,
                                                                             args.job_size)
+
                         print "%s results in gen data (%s at start)" % (num_fin, num_res_files)
 
+                        print "i = %s\n " \
+                              "finished - initial = %s - %s\n" \
+                              "finished - initial mod i = %s\n" \
+                              "i+1-lastjob = %s" % (i, num_fin, num_res_files, ((num_fin - num_res_files) % i),
+                                                    i + 1 - args.last_job)
                         # some jobs may possibly fail
                         # if its been on same batch for 15 min,
                         # check if their are log files (.out) for this batch in logs
