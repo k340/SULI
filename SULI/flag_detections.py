@@ -23,7 +23,7 @@ if __name__ == "__main__":
     parser.add_argument("--display", help="Set to [True] to display file contents in terminal", type=bool,
                         default=False)
     parser.add_argument("--out_file", help="If defined, name of txt file with path/name of files with detections",
-                        type=str, default='none')
+                        type=str, default='')
     parser.add_argument("--threshold", help="Number of detections required for a day to be flagged; 1 by default",
                         type=int, default=1)
 
@@ -73,6 +73,6 @@ if __name__ == "__main__":
                 print '%s (%s detections)' % (interesting_files[i], active_file_detections.size)
 
                 # and write to out_file if specified
-                if args.out_file != 'none':
+                if args.out_file:
 
                     f.write("%s\n" % (interesting_files[i]))
