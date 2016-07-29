@@ -171,7 +171,7 @@ if __name__ == "__main__":
                                                                                                          results))])
                     sleep_count = 0
                     failed = False
-                    while (num_fin - num_res_files) != (i + 1 - args.last_job) and failed is False:
+                    while (num_fin - num_res_files) <= (i + 1 - args.last_job) and failed is False:
 
                         # sleep for 30s
                         time.sleep(30)
