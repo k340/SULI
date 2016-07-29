@@ -171,7 +171,7 @@ if __name__ == "__main__":
                                                                                                          results))])
                     sleep_count = 0
                     failed = False
-                    while (num_fin - num_res_files) != (i + 1 - args.last_job):
+                    while (num_fin - num_res_files) != (i + 1 - args.last_job) and failed is False:
 
                         # sleep for 30s
                         time.sleep(30)
@@ -185,18 +185,23 @@ if __name__ == "__main__":
 
                         print "%s results in gen data (%s at start)" % (num_fin, num_res_files)
 
-                        print "Debug info:\n" \
-                              "i = %s\n " \
+                        print "i = %s\n " \
                               "finished - initial = %s\n" \
                               "i+1-lastjob = %s\n" % (i, num_fin - num_res_files, i + 1 - args.last_job)
 
                         # some jobs may possibly fail
-                        # if its been on same batch for 15 min,
+                        # if its been on same batch for 20 min,
                         # check if their are log files (.out) for this batch in logs
                         # if so, batch is finished, move on
                         if sleep_count >= 30:
 
-                            pass
+                            LOG = './logs'
+                            num_out = len([out for out in os.listdir(LOG) if
+                                           (str(os.path.join(LOG, out)).endswith('.out'))])
+
+                            if num_out == i + 1:
+
+                                failed = True
 
         else:
 
