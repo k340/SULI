@@ -111,11 +111,16 @@ if __name__ == "__main__":
     shutil.copytree(args.src_dir, local_src_dir)
 
     cmd_line = "sim_day_fits.py --tstart %s --in_ft2 %s --src_dir %s --xml %s --source %s --buffer %s " \
-               "--n_days %s --evclass %s --zmax %s --interval %s --seed_mult %s" % (args.tstart, local_ft2,
+               "--n_days %s --evclass %s --zmax %s --interval %s --seed_mult %s" % (args.tstart,
+                                                                                    local_ft2,
                                                                                     local_src_dir,
-                                                                                    args.xml, args.source, args.buffer,
-                                                                                    args.n_days, args.evclass,
-                                                                                    args.zmax, args.interval,
+                                                                                    args.xml,
+                                                                                    args.source,
+                                                                                    args.buffer,
+                                                                                    args.n_days,
+                                                                                    args.evclass,
+                                                                                    args.zmax,
+                                                                                    args.interval,
                                                                                     args.seed_mult)
 
     try:
