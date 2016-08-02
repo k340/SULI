@@ -37,6 +37,7 @@ if __name__ == "__main__":
     parser.add_argument("--zmax", help="Zenith cut for the events", type=float, default=180)
     parser.add_argument("--interval", help="Length of time interval covered by output files (default 24 hours)",
                         type=float, default=86400.0)
+    parser.add_argument("--seed_mult", help="Seed is multiplied by this number", required=True, type=int)
 
     # parse the arguments
     args = parser.parse_args()
@@ -95,8 +96,13 @@ if __name__ == "__main__":
                    "irfs=P8R2_SOURCE_V6 " \
                    "evtype=none maxrows=1000000 " \
                    "seed=%s " \
-                   "chatter=5" % (os.path.join(args.src_dir, args.xml), os.path.join(args.src_dir, args.source),
-                                  out_ft2, str(int(this_ft1_start)), args.interval, this_ft1_start, int(this_ft1_start))
+                   "chatter=5" % (os.path.join(args.src_dir, args.xml),
+                                  os.path.join(args.src_dir, args.source),
+                                  out_ft2,
+                                  str(int(this_ft1_start)),
+                                  args.interval,
+                                  this_ft1_start,
+                                  int(this_ft1_start) * args.seed_mult)
 
         # execute simulation
         execute_command(cmd_line)

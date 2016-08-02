@@ -56,6 +56,7 @@ if __name__ == "__main__":
     parser.add_argument("--zmax", help="Zenith cut for the events", type=float, default=180)
     parser.add_argument("--interval", help="Length of time interval covered by output files (default 24 hours)",
                         type=float, default=86400.0)
+    parser.add_argument("--seed_mult", help="Seed is multiplied by this number", required=True, type=int)
 
     args = parser.parse_args()
 
@@ -110,10 +111,12 @@ if __name__ == "__main__":
     shutil.copytree(args.src_dir, local_src_dir)
 
     cmd_line = "sim_day_fits.py --tstart %s --in_ft2 %s --src_dir %s --xml %s --source %s --buffer %s " \
-               "--n_days %s --evclass %s --zmax %s --interval %s" % (args.tstart, local_ft2, local_src_dir,
-                                                                     args.xml, args.source, args.buffer,
-                                                                     args.n_days, args.evclass, args.zmax,
-                                                                     args.interval)
+               "--n_days %s --evclass %s --zmax %s --interval %s --seed_mult %s" % (args.tstart, local_ft2,
+                                                                                    local_src_dir,
+                                                                                    args.xml, args.source, args.buffer,
+                                                                                    args.n_days, args.evclass,
+                                                                                    args.zmax, args.interval,
+                                                                                    args.seed_mult)
 
     try:
 

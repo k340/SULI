@@ -23,6 +23,8 @@ if __name__ == "__main__":
     parser.add_argument("--res_dir", help="Directory where to put the results and logs for the simulation",
                         required=False, type=str, default=os.getcwd())
 
+    parser.add_argument("--seed_mult", help="Seed is multiplied by this number", required=False, type=int, default=1)
+
     parser.add_argument('--test', dest='test_run', action='store_true')
     parser.set_defaults(test_run=False)
 
@@ -78,8 +80,9 @@ if __name__ == "__main__":
         def get_cmd_line(sub_tstart):
 
             cmd_line = "qsub -l vmem=30gb -o %s/%s.out -e %s/%s.err -V -F '--tstart %s --in_ft2 %s " \
-                       "--src_dir %s --out_dir %s' %s" % (log_path, sub_tstart, log_path, sub_tstart,
-                                                          sub_tstart, ft2_path, src_dir, out_path, exe_path)
+                       "--src_dir %s --out_dir %s --seed_mult %s' %s" % (log_path, sub_tstart, log_path, sub_tstart,
+                                                                         sub_tstart, ft2_path, src_dir, out_path,
+                                                                         args.seed_mult, exe_path)
 
             return cmd_line
 
