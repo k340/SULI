@@ -171,7 +171,7 @@ if __name__ == "__main__":
                                                                                                          results))])
                     sleep_count = 0
                     failed = False
-                    while (num_fin - num_res_files) <= (i + 1 - args.last_job) and failed is False:
+                    while (num_fin - num_res_files) < (i + 1 - args.last_job) and failed is False:
 
                         # sleep for 30s
                         time.sleep(30)
@@ -190,8 +190,8 @@ if __name__ == "__main__":
                               "i+1-lastjob = %s\n" % (i, num_fin - num_res_files, i + 1 - args.last_job)
 
                         # some jobs may possibly fail
-                        # if its been on same batch for 20 min,
-                        # check if their are log files (.out) for this batch in logs
+                        # if script has been on same batch for 15 min,
+                        # check if there are log files (.out) for this batch in logs
                         # if so, batch is finished, move on
                         if sleep_count >= 30:
 
