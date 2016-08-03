@@ -17,7 +17,7 @@ if __name__ == "__main__":
     # add the arguments needed to the parser
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('--dates', help='Name of txt file containing dates to load', type=str)
-    group.add_argument('--date', help='Date from which a year of data will be searched', type=int)
+    group.add_argument('--date', help='Date from which a year of data will be searched', type=str)
     group.add_argument("--src_dir", help="Directory containing input data to be searched", type=str)
 
     parser.add_argument("--irf", help="Instrument response function name to be used", type=str, required=True)
