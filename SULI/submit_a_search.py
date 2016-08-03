@@ -44,14 +44,6 @@ if __name__ == "__main__":
 
         raise RuntimeError("Directory %s does not exist" % res_dir)
 
-    # get src directory from parser
-    src_dir = os.path.abspath(os.path.expandvars(os.path.expanduser(args.src_dir)))
-
-    # Check that the simulation directory exists
-    if not os.path.exists(src_dir):
-
-        raise RuntimeError("Directory %s does not exist" % src_dir)
-
     # Go to output directory
     with work_within_directory(res_dir):
 
@@ -75,6 +67,14 @@ if __name__ == "__main__":
 
         # if using simulated data:
         if args.src_dir:
+
+            # get src directory from parser
+            src_dir = os.path.abspath(os.path.expandvars(os.path.expanduser(args.src_dir)))
+
+            # Check that the src directory exists
+            if not os.path.exists(src_dir):
+
+                raise RuntimeError("Directory %s does not exist" % src_dir)
 
             # get list of ft1 files
             ft1_files = [f for f in os.listdir(src_dir) if (str(os.path.join(src_dir, f)).endswith(('ft1.fits',
