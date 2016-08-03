@@ -16,7 +16,8 @@ if __name__ == "__main__":
 
     # add the arguments needed to the parser
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--date', help='date specifying file to load')
+    group.add_argument('--dates', help='Name of txt file containing dates to load', type=str)
+    group.add_argument('--date', help='Date from which a year of data will be searched', type=int)
     group.add_argument("--src_dir", help="Directory containing input data to be searched", type=str)
 
     parser.add_argument("--irf", help="Instrument response function name to be used", type=str, required=True)
@@ -215,13 +216,28 @@ if __name__ == "__main__":
                 return this_cmd_line
 
             # A year of Fermi data
+            if args.date:
 
-            dates = np.arange(args.date, args.date + (365.0 * 86400.0), 86400.0)
+                dates = np.arange(args.date, args.date + (365.0 * 86400.0), 86400.0)
 
-            for this_tstart in dates:
+                for this_tstart in dates:
 
-                cmd_line = rl_cmd_line(this_tstart)
+                    cmd_line = rl_cmd_line(this_tstart)
 
-                if not args.test_run:
+                    if not args.test_run:
 
-                    execute_command(cmd_line)
+                        execute_command(cmd_line)
+
+            # A list of dates
+            else:
+
+                # get dates from file as a list
+                dates = [line.rstrip('\n') for line in open(args.dates)]
+
+                for i in range(len(dates)):
+
+                    cmd_line = rl_cmd_line(dates[i])
+
+                    if not args.test_run:
+
+                        execute_command(cmd_line)
