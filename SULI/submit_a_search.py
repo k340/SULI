@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import numpy as np
 import argparse
 import os
 import time
@@ -208,7 +207,7 @@ if __name__ == "__main__":
 
             def rl_cmd_line(start):
 
-                this_cmd_line = "qsub -l vmem=10gb -o %s/%s.out -e %s/%s.err -V -F '--date %s --irf %s " \
+                this_cmd_line = "qsub -l vmem=30gb -o %s/%s.out -e %s/%s.err -V -F '--date %s --irf %s " \
                                 "--probability %s --min_dist %s --out_dir %s' %s" % (log_path, start, log_path,
                                                                                      start, start, args.irf,
                                                                                      args.probability, args.min_dist,
