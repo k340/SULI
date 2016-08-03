@@ -215,18 +215,16 @@ if __name__ == "__main__":
                                                                                      out_path, exe_path)
                 return this_cmd_line
 
-            # A year of Fermi data
+            # single day
             if args.date:
 
                 dates = np.arange(args.date, args.date + (365.0 * 86400.0), 86400.0)
 
-                for this_tstart in dates:
+                cmd_line = rl_cmd_line(args.date)
 
-                    cmd_line = rl_cmd_line(this_tstart)
+                if not args.test_run:
 
-                    if not args.test_run:
-
-                        execute_command(cmd_line)
+                    execute_command(cmd_line)
 
             # A list of dates
             else:
