@@ -7,6 +7,7 @@
 import argparse
 import numpy as np
 import subprocess
+import os
 from os import listdir
 from os.path import join
 
@@ -19,7 +20,7 @@ if __name__ == "__main__":
 
     # add the arguments needed to the parser
     parser.add_argument("--directory", help="Location of files to be searched", type=str,
-                        required=True)
+                        default=os.getcwd())
     parser.add_argument("--display", help="Set to [True] to display file contents in terminal", type=bool,
                         default=False)
     parser.add_argument("--out_file", help="If defined, name of txt file with path/name of files with detections",
