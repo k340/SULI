@@ -122,10 +122,10 @@ def check_nearest(regions, min_dist):
     while i in range(len(regions)):
 
         # secondary iteration counter
-        j = 1
+        j = i + 1
 
         # look at each subsequent region j
-        # (start from i+1 to avoid checking twice for overlapping regions)
+        # start from i+1 to avoid checking twice for overlapping regions
 
         while j in range(i + 1, len(regions)):
 
