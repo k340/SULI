@@ -217,8 +217,6 @@ if __name__ == "__main__":
             # single day
             if args.date:
 
-                # dates = np.arange(args.date, args.date + (365.0 * 86400.0), 86400.0)
-
                 cmd_line = rl_cmd_line(args.date)
 
                 if not args.test_run:
