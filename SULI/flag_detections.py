@@ -50,7 +50,7 @@ if __name__ == "__main__":
         # display file contents regardless, if specified
         if args.display is True:
 
-            print '%s:' % files[i]
+            print '\n%s:' % files[i]
             cmd_line = 'cat %s' % files[i]
             subprocess.check_call(cmd_line, shell=True)
 
