@@ -11,12 +11,6 @@ from SULI.work_within_directory import work_within_directory
 from astropy.io import fits
 
 
-def safe_run(in_list, cmd_type, data_length):
-
-    # job submit loop for sima nd rl data is almost identical, generalize here and use this function instead
-    pass
-
-
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser('Submit transient search to the farm at Stanford')
@@ -73,6 +67,52 @@ if __name__ == "__main__":
         log_path = os.path.abspath('logs')
         out_path = os.path.abspath('generated_data')
         exe_path = which.which('search_on_farm.py')
+
+        # loop-staggering function for bulk submissions to farm
+        def safe_run(var):
+
+            # don't spam the farm; if more than [jobsize] jobs have been submitted,
+            # wait until they finish to submit more
+            if (var + 1) % args.job_size == 0:
+
+                # check res_dir every 10s for new results
+
+                # while the current number of results is not i+1 more than the initial number
+                # i.e., while the number of new files hasn't caught up to i + 1
+                num_fin = len([res for res in os.listdir(DIR) if os.path.isfile(os.path.join(DIR, res))])
+                sleep_count = 0
+                failed = False
+                while (num_fin - num_res_files) < (var + 1 - args.last_job) and failed is False:
+
+                    # sleep for 30s
+                    time.sleep(30)
+                    sleep_count += 1
+
+                    # update num_fin for any finished jobs
+                    num_fin = len(
+                        [res for res in os.listdir(DIR) if os.path.isfile(os.path.join(DIR, res))])
+                    print "%s ouf of %s " \
+                          "jobs in this pass finished." % ((num_fin - num_res_files) % args.job_size,
+                                                           args.job_size)
+
+                    print "%s results in gen data (%s at start)" % (num_fin, num_res_files)
+
+                    print "i = %s\n " \
+                          "finished - initial = %s\n" \
+                          "i+1-lastjob = %s\n" % (var, num_fin - num_res_files, var + 1 - args.last_job)
+
+                    # some jobs may possibly fail
+                    # if script has been on same batch for 15 min,
+                    # check if there are log files (.out) for this batch in logs
+                    # if so, batch is finished, move on
+                    if sleep_count >= 30:
+
+                        log = './logs'
+                        num_out = len([out for out in os.listdir(log) if
+                                       (str(os.path.join(log, out)).endswith('.out'))])
+
+                        if num_out == var + 1:
+                            failed = True
 
         # if using simulated data:
         if args.src_dir:
@@ -169,49 +209,7 @@ if __name__ == "__main__":
                     print "\nDay %s:" % (i + 1)
                     execute_command(cmd_line)
 
-                # don't spam the farm; if more than [jobsize] jobs have been submitted,
-                # wait until they finish to submit more
-                if (i + 1) % args.job_size == 0:
-
-                    # check res_dir every 10s for new results
-
-                    # while the current number of results is not i+1 more than the initial number
-                    # i.e., while the number of new files hasn't caught up to i + 1
-                    num_fin = len([results for results in os.listdir(DIR) if os.path.isfile(os.path.join(DIR,
-                                                                                                         results))])
-                    sleep_count = 0
-                    failed = False
-                    while (num_fin - num_res_files) < (i + 1 - args.last_job) and failed is False:
-
-                        # sleep for 30s
-                        time.sleep(30)
-                        sleep_count += 1
-
-                        # update num_fin for any finished jobs
-                        num_fin = len([results for results in os.listdir(DIR) if os.path.isfile(os.path.join(DIR,
-                                                                                                             results))])
-                        print "%s ouf of %s jobs in this pass finished." % ((num_fin - num_res_files) % args.job_size,
-                                                                            args.job_size)
-
-                        print "%s results in gen data (%s at start)" % (num_fin, num_res_files)
-
-                        print "i = %s\n " \
-                              "finished - initial = %s\n" \
-                              "i+1-lastjob = %s\n" % (i, num_fin - num_res_files, i + 1 - args.last_job)
-
-                        # some jobs may possibly fail
-                        # if script has been on same batch for 15 min,
-                        # check if there are log files (.out) for this batch in logs
-                        # if so, batch is finished, move on
-                        if sleep_count >= 30:
-
-                            LOG = './logs'
-                            num_out = len([out for out in os.listdir(LOG) if
-                                           (str(os.path.join(LOG, out)).endswith('.out'))])
-
-                            if num_out == i + 1:
-
-                                failed = True
+                    safe_run(i)
 
         # else using real data
         else:
@@ -315,47 +313,4 @@ if __name__ == "__main__":
                         print "\nDay %s:" % (i + 1)
                         execute_command(cmd_line)
 
-                    # don't spam the farm; if more than [jobsize] jobs have been submitted,
-                    # wait until they finish to submit more
-                    if (i + 1) % args.job_size == 0:
-
-                        # check res_dir every 10s for new results
-
-                        # while the current number of results is not i+1 more than the initial number
-                        # i.e., while the number of new files hasn't caught up to i + 1
-                        num_fin = len([results for results in os.listdir(DIR) if os.path.isfile(os.path.join(DIR,
-                                                                                                             results))])
-                        sleep_count = 0
-                        failed = False
-                        while (num_fin - num_res_files) < (i + 1 - args.last_job) and failed is False:
-
-                            # sleep for 30s
-                            time.sleep(30)
-                            sleep_count += 1
-
-                            # update num_fin for any finished jobs
-                            num_fin = len(
-                                [results for results in os.listdir(DIR) if os.path.isfile(os.path.join(DIR,
-                                                                                                       results))])
-                            print "%s ouf of %s " \
-                                  "jobs in this pass finished." % ((num_fin - num_res_files) % args.job_size,
-                                                                   args.job_size)
-
-                            print "%s results in gen data (%s at start)" % (num_fin, num_res_files)
-
-                            print "i = %s\n " \
-                                  "finished - initial = %s\n" \
-                                  "i+1-lastjob = %s\n" % (i, num_fin - num_res_files, i + 1 - args.last_job)
-
-                            # some jobs may possibly fail
-                            # if script has been on same batch for 15 min,
-                            # check if there are log files (.out) for this batch in logs
-                            # if so, batch is finished, move on
-                            if sleep_count >= 30:
-
-                                LOG = './logs'
-                                num_out = len([out for out in os.listdir(LOG) if
-                                               (str(os.path.join(LOG, out)).endswith('.out'))])
-
-                                if num_out == i + 1:
-                                    failed = True
+                        safe_run(i)
