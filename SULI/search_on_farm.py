@@ -39,7 +39,7 @@ if __name__ == "__main__":
     group.add_argument('--inp_fts', help='filenames of ft1 and ft2 input, separated by a comma (ex: foo.ft1,bar.ft2)')
 
     parser.add_argument("--irf", help="Instrument response function name to be used", type=str, required=True)
-    parser.add_argument("--probability", help="Probability of null hypothesis", type=float, required=True)
+    parser.add_argument("--probability", help="Probability of null hypothesis", type=float, default=6.33e-5)
     parser.add_argument("--min_dist", help="Distance above which regions are not considered to overlap", type=float,
                         required=True)
     parser.add_argument("--out_dir", help="Directory which will contain the search results txt file)",

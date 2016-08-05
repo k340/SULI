@@ -3,6 +3,7 @@
 import argparse
 import os
 import time
+import calendar
 
 from SULI import which
 from SULI.execute_command import execute_command
@@ -15,20 +16,22 @@ if __name__ == "__main__":
 
     # add the arguments needed to the parser
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--dates', help='Name of txt file containing dates to load', type=str)
-    group.add_argument('--date', help='Date from which a year of data will be searched', type=str)
-    group.add_argument("--src_dir", help="Directory containing input data to be searched", type=str)
+    group.add_argument('--start', help="Date (yyyy-mm-ddThh:mm:ss) from which a year of real data will be searched",
+                       type=str)
+    group.add_argument('--dates', help='Name of txt file containing dates to load real data from', type=str)
+    group.add_argument('--date', help='Date of real data that will be searched', type=str)
+    group.add_argument("--src_dir", help="Directory containing simulated data to be searched", type=str)
 
     parser.add_argument("--irf", help="Instrument response function name to be used", type=str, required=True)
-    parser.add_argument("--probability", help="Probability of null hypothesis", type=float, required=True)
+    parser.add_argument("--probability", help="Probability of null hypothesis", type=float, default=6.33e-5)
     parser.add_argument("--min_dist", help="Distance above which regions are not considered to overlap", type=float,
                         required=True)
 
     parser.add_argument("--res_dir", help="Directory where to put the results and logs for the search",
                         required=False, type=str, default=os.getcwd())
     parser.add_argument("--job_size", help="Number of jobs to submit at a time", required=False, type=int, default=20)
-    parser.add_argument("--last_job", help="Integer specifying the last job submitted in this folder", required=False,
-                        type=int, default=0)
+    parser.add_argument("--last_job", help="Integer specifying the last job submitted in this folder/year",
+                        required=False, type=int, default=0)
     parser.add_argument('--test', dest='test_run', action='store_true')
     parser.set_defaults(test_run=False)
 
@@ -203,6 +206,7 @@ if __name__ == "__main__":
 
                                 failed = True
 
+        # else using real data
         else:
 
             def rl_cmd_line(start):
@@ -224,7 +228,7 @@ if __name__ == "__main__":
                     execute_command(cmd_line)
 
             # A list of dates
-            else:
+            elif args.dates:
 
                 # get dates from file as a list
                 dates = [line.rstrip('\n') for line in open(args.dates)]
@@ -236,3 +240,115 @@ if __name__ == "__main__":
                     if not args.test_run:
 
                         execute_command(cmd_line)
+
+            # a year of data
+            else:
+
+                date_list = []
+                year_length = 365
+                num_days = 31
+
+                # for each month, determine number of days in month,
+                # then add the string representation of that date in month to date_list
+                for m in range(12):
+
+                    # if February
+                    if m == 1:
+
+                        # get year from start date, cast as int, check if leap year
+                        if calendar.isleap(int(args.start.split("-", 1)[0])):
+
+                            year_length = 366
+
+                            num_days = 29
+
+                        else:
+
+                            num_days = 28
+
+                    # if month has 30 days
+                    elif m == 3 or m == 5 or m == 8 or m == 10:
+
+                        num_days = 30
+
+                    # if normal month
+                    else:
+
+                        num_days = 31
+
+                    # for each day in month, construct date string and add it to date_list
+                    for d in range(num_days):
+
+                        if (m + 1) >= 10:
+
+                            this_month = str(m + 1)
+
+                        else:
+
+                            this_month = "0%s" % str(m + 1)
+
+                        if (d + 1) >= 10:
+
+                            this_day = str(d + 1)
+
+                        else:
+
+                            this_day = "0%s" % str(d + 1)
+
+                        this_date = "%s-%s-%sT00:00:00" % (args.start.split("-", 1)[0], this_month, this_day)
+
+                        date_list.append(this_date)
+
+                for i in range(args.last_job, year_length):
+
+                    cmd_line = rl_cmd_line(date_list[i])
+
+                    if not args.test_run:
+
+                        print "\nDay %s:" % (i + 1)
+                        execute_command(cmd_line)
+
+                    # don't spam the farm; if more than [jobsize] jobs have been submitted,
+                    # wait until they finish to submit more
+                    if (i + 1) % args.job_size == 0:
+
+                        # check res_dir every 10s for new results
+
+                        # while the current number of results is not i+1 more than the initial number
+                        # i.e., while the number of new files hasn't caught up to i + 1
+                        num_fin = len([results for results in os.listdir(DIR) if os.path.isfile(os.path.join(DIR,
+                                                                                                             results))])
+                        sleep_count = 0
+                        failed = False
+                        while (num_fin - num_res_files) < (i + 1 - args.last_job) and failed is False:
+
+                            # sleep for 30s
+                            time.sleep(30)
+                            sleep_count += 1
+
+                            # update num_fin for any finished jobs
+                            num_fin = len(
+                                [results for results in os.listdir(DIR) if os.path.isfile(os.path.join(DIR,
+                                                                                                       results))])
+                            print "%s ouf of %s " \
+                                  "jobs in this pass finished." % ((num_fin - num_res_files) % args.job_size,
+                                                                   args.job_size)
+
+                            print "%s results in gen data (%s at start)" % (num_fin, num_res_files)
+
+                            print "i = %s\n " \
+                                  "finished - initial = %s\n" \
+                                  "i+1-lastjob = %s\n" % (i, num_fin - num_res_files, i + 1 - args.last_job)
+
+                            # some jobs may possibly fail
+                            # if script has been on same batch for 15 min,
+                            # check if there are log files (.out) for this batch in logs
+                            # if so, batch is finished, move on
+                            if sleep_count >= 30:
+
+                                LOG = './logs'
+                                num_out = len([out for out in os.listdir(LOG) if
+                                               (str(os.path.join(LOG, out)).endswith('.out'))])
+
+                                if num_out == i + 1:
+                                    failed = True
