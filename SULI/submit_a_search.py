@@ -10,6 +10,13 @@ from SULI.execute_command import execute_command
 from SULI.work_within_directory import work_within_directory
 from astropy.io import fits
 
+
+def safe_run(in_list, cmd_type, data_length):
+
+    # job submit loop for sima nd rl data is almost identical, generalize here and use this function instead
+    pass
+
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser('Submit transient search to the farm at Stanford')
