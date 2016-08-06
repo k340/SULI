@@ -61,6 +61,8 @@ if __name__ == "__main__":
 
     else:
 
+        n_detections = 0
+
         print 'The following files have detections:\n'
 
         with open(args.out_file + '.txt', 'w+') as f:
@@ -73,7 +75,11 @@ if __name__ == "__main__":
                                                        usemask=False)
                 print '%s (%s detections)' % (interesting_files[i], active_file_detections.size)
 
+                n_detections += active_file_detections.size
+
                 # and write to out_file if specified
                 if args.out_file:
 
                     f.write("%s\n" % (interesting_files[i]))
+
+        print '\n%s Total detections' % n_detections
