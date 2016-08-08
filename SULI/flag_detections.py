@@ -74,6 +74,12 @@ if __name__ == "__main__":
 
                 active_file_detections = np.recfromtxt(args.directory + '/' + interesting_files[i], names=True,
                                                        usemask=False)
+                if len(active_file_detections.shape) == 0:
+
+                    # The file contains only one line. In that case, unfortunately, recfromtxt does not produce
+                    # an array of lines, but just one line. Fix that
+                    active_file_detections = np.array([active_file_detections])
+
                 print active_file_detections[0]
 
                 print '%s (%s detections)' % (interesting_files[i], active_file_detections.size)
