@@ -83,7 +83,7 @@ if __name__ == "__main__":
 
                 # and add its detections to master array in order of significance
 
-               ''' if len(active_file_detections.shape) == 0:
+                '''if len(active_file_detections.shape) == 0:
 
                     # The file contains only one line. In that case, unfortunately, recfromtxt does not produce
                     # an array of lines, but just one line. Fix that
