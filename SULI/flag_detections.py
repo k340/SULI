@@ -62,6 +62,7 @@ if __name__ == "__main__":
     else:
 
         n_detections = 0
+        detections = []
 
         print 'The following files have detections:\n'
 
@@ -73,6 +74,10 @@ if __name__ == "__main__":
 
                 active_file_detections = np.recfromtxt(args.directory + '/' + interesting_files[i], names=True,
                                                        usemask=False)
+                for j in active_file_detections:
+
+                    print j
+
                 print '%s (%s detections)' % (interesting_files[i], active_file_detections.size)
 
                 n_detections += active_file_detections.size
