@@ -74,9 +74,9 @@ if __name__ == "__main__":
 
                 active_file_detections = np.recfromtxt(args.directory + '/' + interesting_files[i], names=True,
                                                        usemask=False)
-                for j in active_file_detections:
+                for j in range(len(active_file_detections)):
 
-                    print j
+                    print active_file_detections[j]
 
                 print '%s (%s detections)' % (interesting_files[i], active_file_detections.size)
 
