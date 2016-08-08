@@ -55,6 +55,7 @@ if __name__ == "__main__":
             cmd_line = 'cat %s' % files[i]
             subprocess.check_call(cmd_line, shell=True)
 
+    # if there are no files with more detections than args.threshold
     if len(interesting_files) == 0:
 
         print '\nNo anomalous detections'
@@ -62,7 +63,10 @@ if __name__ == "__main__":
     else:
 
         n_detections = 0
-        detections = []
+
+        # recarray for all detections
+        detections = np.recarray((0,), dtype=[('name', str), ('ra', float), ('dec', float), ('tstarts', str),
+                                              ('tstops', str), ('counts', str), ('probability', str)])
 
         print 'The following files have detections:\n'
 
@@ -74,15 +78,34 @@ if __name__ == "__main__":
 
                 active_file_detections = np.recfromtxt(args.directory + '/' + interesting_files[i], names=True,
                                                        usemask=False)
-                if len(active_file_detections.shape) == 0:
+
+                print '%s (%s detections)' % (interesting_files[i], active_file_detections.size)
+
+                # and add its detections to master array in order of significance
+
+               ''' if len(active_file_detections.shape) == 0:
 
                     # The file contains only one line. In that case, unfortunately, recfromtxt does not produce
                     # an array of lines, but just one line. Fix that
                     active_file_detections = np.array([active_file_detections])
 
-                print active_file_detections[0]
+                for j in range(active_file_detections.size):
 
-                print '%s (%s detections)' % (interesting_files[i], active_file_detections.size)
+                    for k in range(detections.size):
+
+                        probs = np.array(map(float, detections[k]['probability'].split(",")))
+
+                        new_probs = np.array(map(float, active_file_detections[j]['probability'].split(",")))
+
+                        if max(new_probs) > max(probs):
+
+                            detections.insert(k, active_file_detections[j])
+
+                            break'''
+
+
+
+
 
                 n_detections += active_file_detections.size
 
