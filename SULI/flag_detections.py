@@ -83,30 +83,6 @@ if __name__ == "__main__":
 
                 # and add its detections to master array in order of significance
 
-                '''if len(active_file_detections.shape) == 0:
-
-                    # The file contains only one line. In that case, unfortunately, recfromtxt does not produce
-                    # an array of lines, but just one line. Fix that
-                    active_file_detections = np.array([active_file_detections])
-
-                for j in range(active_file_detections.size):
-
-                    for k in range(detections.size):
-
-                        probs = np.array(map(float, detections[k]['probability'].split(",")))
-
-                        new_probs = np.array(map(float, active_file_detections[j]['probability'].split(",")))
-
-                        if max(new_probs) > max(probs):
-
-                            detections.insert(k, active_file_detections[j])
-
-                            break'''
-
-
-
-
-
                 n_detections += active_file_detections.size
 
                 # and write to out_file if specified
