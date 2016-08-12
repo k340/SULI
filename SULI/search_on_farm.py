@@ -4,7 +4,8 @@ import argparse
 import os
 import shutil
 import glob
-import subprocess
+
+from SULI.execute_command import execute_command
 from astropy.io import fits
 
 
@@ -125,7 +126,7 @@ if __name__ == "__main__":
         print(cmd_line)
         print('\n')
 
-        subprocess.check_call(cmd_line, shell=True)
+        execute_command(cmd_line)
 
     except:
 
@@ -133,10 +134,10 @@ if __name__ == "__main__":
         print("Maybe this will help:")
         print("\nContent of directory:\n")
 
-        subprocess.check_call("ls", shell=True)
+        execute_command("ls")
 
         print("\nFree space on disk:\n")
-        subprocess.check_call("df . -h", shell=True)
+        execute_command("df . -h")
 
     else:
 
