@@ -112,6 +112,8 @@ if __name__ == "__main__":
                                        (str(os.path.join(log, out)).endswith('.out'))])
 
                         if num_out == var + 1:
+
+                            print('Job Appears to have Failed...')
                             failed = True
 
         # if using simulated data:
