@@ -69,7 +69,8 @@ if __name__ == "__main__":
         exe_path = which.which('search_on_farm.py')
 
         # loop-staggering function for bulk submissions to farm
-        def safe_run(var):
+
+        def safe_run(var, fail_track):
 
             # don't spam the farm; if more than [jobsize] jobs have been submitted,
             # wait until they finish to submit more
@@ -115,6 +116,7 @@ if __name__ == "__main__":
 
                             print('Job Appears to have Failed...')
                             failed = True
+                            fail_track.append(i)
 
         # if using simulated data:
         if args.src_dir:
@@ -199,6 +201,7 @@ if __name__ == "__main__":
                 return this_cmd_line
 
             # iterate over input directory, calling search on each pair of fits
+            fails = []
             for i in range(args.last_job, len(ft1_files)):
 
                 this_ft1 = src_dir + '/' + ft1_files[i]
@@ -211,7 +214,14 @@ if __name__ == "__main__":
                     print "\nDay %s:" % (i + 1)
                     execute_command(cmd_line)
 
-                    safe_run(i)
+                    safe_run(i, fails)
+
+                    if len(fails) >= 10:
+
+                        pass
+                        # raise RuntimeError('Too Many Jobs Have Failed')
+                        # this is not to be implimented until more robust error detection is introduced
+                        # plan is to check contents of log files rather than existence
 
         # else using real data
         else:
@@ -240,6 +250,8 @@ if __name__ == "__main__":
                 # get dates from file as a list
                 dates = [line.rstrip('\n') for line in open(args.dates)]
 
+                # iterate over dates, searching each
+                fails = []
                 for i in range(len(dates)):
 
                     cmd_line = rl_cmd_line(dates[i])
@@ -247,6 +259,12 @@ if __name__ == "__main__":
                     if not args.test_run:
 
                         execute_command(cmd_line)
+
+                        safe_run(i, fails)
+
+                        if len(fails) >= 10:
+                            pass
+                            # raise RuntimeError('Too Many Jobs Have Failed')
 
             # a year of data
             else:
@@ -306,6 +324,8 @@ if __name__ == "__main__":
 
                         date_list.append(this_date)
 
+                # iterate over year, searching each day
+                fails = []
                 for i in range(args.last_job, year_length):
 
                     cmd_line = rl_cmd_line(date_list[i])
@@ -315,4 +335,8 @@ if __name__ == "__main__":
                         print "\nDay %s:" % (i + 1)
                         execute_command(cmd_line)
 
-                        safe_run(i)
+                        safe_run(i, fails)
+
+                        if len(fails) >= 10:
+                            pass
+                            # raise RuntimeError('Too Many Jobs Have Failed')
