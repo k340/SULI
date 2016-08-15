@@ -9,6 +9,7 @@ from SULI import which
 from SULI.execute_command import execute_command
 from SULI.work_within_directory import work_within_directory
 from astropy.io import fits
+from subprocess import check_output
 
 
 if __name__ == "__main__":
@@ -55,7 +56,7 @@ if __name__ == "__main__":
 
             os.mkdir('logs')
 
-        # Create generated_data directory if it does not exist, and get number of files in the directory
+        # Create generated_data directory if it does not exist, and get number of files in the directory if it does
         if not os.path.exists('generated_data'):
 
             os.mkdir('generated_data')
@@ -76,13 +77,17 @@ if __name__ == "__main__":
             # wait until they finish to submit more
             if (var + 1) % args.job_size == 0:
 
-                # check res_dir every 10s for new results
 
-                # while the current number of results is not i+1 more than the initial number
-                # i.e., while the number of new files hasn't caught up to i + 1
+                # number of files in directory at beginning
                 num_fin = len([res for res in os.listdir(DIR) if os.path.isfile(os.path.join(DIR, res))])
+
+                # tracking variables
                 sleep_count = 0
                 failed = False
+
+                # while the current number of results is not i+1 more than the initial number,
+                # i.e., while the number of new files hasn't caught up to i + 1
+                # check res_dir every 30s for new results
                 while (num_fin - num_res_files) < (var + 1 - args.last_job) and failed is False:
 
                     # sleep for 30s
@@ -92,6 +97,8 @@ if __name__ == "__main__":
                     # update num_fin for any finished jobs
                     num_fin = len(
                         [res for res in os.listdir(DIR) if os.path.isfile(os.path.join(DIR, res))])
+
+                    # Job status for anyone watching
                     print "%s ouf of %s " \
                           "jobs in this pass finished." % ((num_fin - num_res_files) % args.job_size,
                                                            args.job_size)
@@ -103,9 +110,7 @@ if __name__ == "__main__":
                           "i+1-lastjob = %s\n" % (var, num_fin - num_res_files, var + 1 - args.last_job)
 
                     # some jobs may possibly fail
-                    # if script has been on same batch for 15 min,
-                    # check if there are log files (.out) for this batch in logs
-                    # if so, batch is finished, move on
+                    # if script has been on same batch for 15 min, check for job failures
                     if sleep_count >= 30:
 
                         # get logs
@@ -113,22 +118,52 @@ if __name__ == "__main__":
                         log_list = [out for out in os.listdir(log) if (str(os.path.join(log, out)).endswith('.out'))]
                         num_out = len(log_list)
 
-                        # first make sure each job has a log
+                        # get (your) jobs currently running on farm
+
+                        # farm status
+                        qstat = check_output("qstat", shell=True).split("\n")
+
+                        # list of jobs
+                        mod_qstat = []
+                        for k in range(2, len(qstat) - 1):
+
+                            mod_qstat.append(qstat[i].split("   ", 2))
+
+                        # list of your jobs
+                        my_jobs = []
+                        for k in range(len(mod_qstat)):
+
+                            if mod_qstat[k][1] == '  ...ch_on_farm.py suli_students':
+
+                                my_jobs.append(mod_qstat[k])
+
+                        # error checks:
+                        #   1) if log file has not been created for submitted jobs
+                        #   2) if job is not on farm but there is no output file
+                        #   3) if logs contain non-0 exit status
+
+                        # 1)
                         if num_out != var + 1:
 
-                            print('Job appears to have died (Missing Log File')
+                            print('Job(s) appear to have died (Missing Log File)')
                             failed = True
                             fail_track.append(var)
 
-                            # check logs for fatal errors
+                        # 2)
+                        elif (num_fin - num_res_files) < (var + 1 - args.last_job) - len(my_jobs):
 
-                            for j in range(var, var + 1 + args.job_size):
+                            print('Job(s) appears to have failed (Fewer jobs on farm than expected)')
+                            failed = True
+                            fail_track.append(var)
 
-                                error = False
+                        # 3)
+                        else:
 
-                                if error is True:
+                            for k in range(var - args.job_size, var + 1):
 
-                                    print('Job Appears to have Failed...')
+                                if 0 == 1: # 'non-zero exit status' in open(str(os.path.join(log, out)).read()):
+
+                                    print('Job(s) appears to have failed (Non-zero exit status in log file)')
                                     failed = True
                                     fail_track.append(var)
 
