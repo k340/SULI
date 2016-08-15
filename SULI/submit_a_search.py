@@ -108,15 +108,29 @@ if __name__ == "__main__":
                     # if so, batch is finished, move on
                     if sleep_count >= 30:
 
+                        # get logs
                         log = './logs'
-                        num_out = len([out for out in os.listdir(log) if
-                                       (str(os.path.join(log, out)).endswith('.out'))])
+                        log_list = [out for out in os.listdir(log) if (str(os.path.join(log, out)).endswith('.out'))]
+                        num_out = len(log_list)
 
-                        if num_out == var + 1:
+                        # first make sure each job has a log
+                        if num_out != var + 1:
 
-                            print('Job Appears to have Failed...')
+                            print('Job appears to have died (Missing Log File')
                             failed = True
-                            fail_track.append(i)
+                            fail_track.append(var)
+
+                            # check logs for fatal errors
+
+                            for j in range(var, var + 1 + args.job_size):
+
+                                error = False
+
+                                if error is True:
+
+                                    print('Job Appears to have Failed...')
+                                    failed = True
+                                    fail_track.append(var)
 
         # if using simulated data:
         if args.src_dir:
