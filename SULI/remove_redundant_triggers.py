@@ -228,7 +228,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # get input data file from parser and convert to record array
-    data = np.recfromtxt(args.in_list, names=True, usemask=False)
+    data = np.recfromtxt(args.in_list, dtype=[('name', 'S50'),
+                                              ('ra', float),
+                                              ('dec', float),
+                                              ('tstarts', 'S1000'),
+                                              ('tstops', 'S1000'),
+                                              ('counts', 'S1000'),
+                                              ('probabilities', 'S1000')])
 
     if len(data.shape) == 0:
 
