@@ -161,7 +161,7 @@ if __name__ == "__main__":
 
                             for k in range(var - args.job_size, var + 1):
 
-                                if 0 == 1: # 'non-zero exit status' in open(str(os.path.join(log, out)).read()):
+                                if 0==1: # 'non-zero exit status' in str(open(os.path.join(log, log_list[k])).read()):
 
                                     print('Job(s) appears to have failed (Non-zero exit status in log file)')
                                     failed = True
