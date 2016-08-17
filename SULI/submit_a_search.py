@@ -127,7 +127,7 @@ if __name__ == "__main__":
                         mod_qstat = []
                         for k in range(2, len(qstat) - 1):
 
-                            mod_qstat.append(qstat[i].split("   ", 2))
+                            mod_qstat.append(qstat[k].split("   ", 2))
 
                         # list of your jobs
                         my_jobs = []
