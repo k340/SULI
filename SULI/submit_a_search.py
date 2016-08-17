@@ -25,7 +25,7 @@ if __name__ == "__main__":
     group.add_argument("--src_dir", help="Directory containing simulated data to be searched", type=str)
 
     parser.add_argument("--irf", help="Instrument response function name to be used", type=str, required=True)
-    parser.add_argument("--probability", help="Probability of null hypothesis", type=float, default=6.33e-5)
+    parser.add_argument("--probability", help="Probability of null hypothesis", type=float, default=1e-5)
     parser.add_argument("--min_dist", help="Distance above which regions are not considered to overlap", type=float,
                         required=True)
 
